@@ -10,12 +10,13 @@ class PupuAnim < GUIPlugin
     )
   end
   def score; 100; end
-  def valid_uri( uri )
+  def valid_uri( uri, exact=true )
+    return true if not exact and uri.start_with?('/animhtml/')
     return false unless uri.start_with?('/animhtml/') and uri.end_with?('.html')
     anim_file = uri.split('/')[-1].split('.')[0]
     anim_files(true).include?(anim_file)
   end
-  def match( uri, m ); (m == :get and valid_uri(uri)); end
+  def match( uri, m ); (m == :get and valid_uri(uri,false)); end
   def ses_data( ses, name )
     ses[:animview][name].data
   end
@@ -70,13 +71,14 @@ class PupuAnim < GUIPlugin
   def idle( msg )
     ses = get_ses(msg)
     last_built = ses[:anim_built].data
-    last_mtime = anim_mtime( ses[:anim_select].data )
+    selected_anim = ses[:anim_select].data
+    last_mtime = anim_mtime( selected_anim )
     if last_built < last_mtime
       ses[:anim_built].set( msg, last_mtime )
     end
     if anim_files != ses[:anim_files].data
       ses[:anim_files].set( msg, anim_files )
-      unless anim_files.include? ses[:anim_select].data
+      unless anim_files.include? selected_anim
         ses[:anim_select].set( msg, anim_first )
       end
     end
