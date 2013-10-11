@@ -1,0 +1,7 @@
+:src_dirs:
+  - ./../../../js
+  - ./js
+:packages:
+  puvut:
+    - pupu_frame
+    - pupu_app

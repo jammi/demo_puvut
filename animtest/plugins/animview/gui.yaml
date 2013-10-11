@@ -1,0 +1,9 @@
+type: GUITree
+version: 1.0
+
+dependencies:
+- puvut
+
+class: PupuApp
+options:
+  values: :values

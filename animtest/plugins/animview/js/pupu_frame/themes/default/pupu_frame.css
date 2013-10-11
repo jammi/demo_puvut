@@ -1,0 +1,4 @@
+.default > .pupu_frame > .pupu_src {
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+}

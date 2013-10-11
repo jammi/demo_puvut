@@ -1,0 +1,13 @@
+# list of files:
+anim_files:
+  call: anim_files
+# selected file:
+anim_select:
+  call: anim_first
+  responder: anim_select
+# speed of animation:
+anim_speed:
+  data: 1000 # ms
+# last build timestamp:
+anim_built:
+  data: 0

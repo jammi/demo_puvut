@@ -1,0 +1,12 @@
+---
+:base_url: /
+:http_server:
+  :port: 12013
+  :bind_address: 127.0.0.1
+  :rack_require: puma
+:index_html:
+  :title: Pupuanim viewer
+:database:
+  :ses_db: sqlite://db/ses.db
+:lib_paths:
+  - ./lib
