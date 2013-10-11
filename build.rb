@@ -10,4 +10,4 @@ tmplpath = 'tmpl/anim_3frame.html'
 
 require_relative 'animtest/lib/animhtml_build'
 animhtml_build = AnimHTMLBuild.new( tmplpath )
-animhtml_build.build( svgpath, htmlpath )
+animhtml_build.build_html( svgpath, htmlpath )
