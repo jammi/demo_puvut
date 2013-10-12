@@ -53,9 +53,9 @@ window.addEventListener('load',function(){
   ],
   svgDoc = (function(){
     return createElemNS(b,'svg',svgNS,{
-      style: { position: 'absolute', top: '5px', left: '5px', width: '300px', height: '230px', overflow: 'visible' },
+      style: { position: 'absolute', top: '5px', left: '5px', width: '320px', height: '320px', overflow: 'visible' },
       xmlns: svgNS,
-      viewBox: '0 0 30 23',
+      viewBox: '0 0 320 320',
       preserveAspectRatio: 'xMidYMid slice',
       version: '1.1'
     });
@@ -67,7 +67,7 @@ window.addEventListener('load',function(){
     path = createElemNS(svgDoc,'path',svgNS,{
       d: frames[0],
       stroke: '#fff',
-      'stroke-width': 0.4,
+      'stroke-width': 4,
       'stroke-linecap': 'round'
     }),
     anim = createElemNS(path,'animate',svgNS,{

@@ -15,18 +15,15 @@ class AnimHTMLBuild
     svg.xpath("//g").each do |g|
       name = g['id']
       path = g.xpath("path").first['d']
-      # p name,path
       layers[name] = path.dup
     end
     jslines = []
     def reducepath(pdata,scale=0.1)
       numre = /([0-9\.]+)/s
-      pdata.gsub(numre) {|n|(scale*n.to_f).floor.to_s}
+      pdata.gsub(numre) { |n| (scale*n.to_f).round.to_s }
     end
     layers.keys.sort.each do |key|
-      value = reducepath( layers[key], 0.1 )
-      # p value, layers[key][0..100]
-      # puts
+      value = reducepath( layers[key], 1.0 )
       jslines << "    // #{key}:\n    '#{value}'"
     end
     jsdata = jslines.join(",\n")
