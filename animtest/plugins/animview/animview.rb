@@ -80,7 +80,7 @@ class PupuAnim < GUIPlugin
     end
     filelist = anim_files(true)
     if filelist != ses[:anim_files].data
-      ses[:anim_files].set( msg, filelist )
+      ses[:anim_files].set( msg, anim_files )
       unless filelist.include? selected_anim
         ses[:anim_select].set( msg, anim_first )
       end
