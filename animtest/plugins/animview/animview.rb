@@ -22,6 +22,7 @@ class PupuAnim < GUIPlugin
   end
   def get( req, res, ses )
     uri = req.fullpath
+    puts "get: #{uri}"
     unless valid_uri( uri )
       res.status = 404
       res['Content-Type'] = 'text/plain'
@@ -57,7 +58,7 @@ class PupuAnim < GUIPlugin
     files
   end
   def anim_first
-    anim_files.first.first
+    anim_files(true).first
   end
   def anim_select( msg, value )
     get_ses(msg,:anim_built).set(msg,0)
@@ -72,13 +73,15 @@ class PupuAnim < GUIPlugin
     ses = get_ses(msg)
     last_built = ses[:anim_built].data
     selected_anim = ses[:anim_select].data
-    last_mtime = anim_mtime( selected_anim )
+    last_mtime = anim_mtime( selected_anim+'.svg' )
     if last_built < last_mtime
+      msg.console "reloaded anim: #{selected_anim.inspect}"
       ses[:anim_built].set( msg, last_mtime )
     end
-    if anim_files != ses[:anim_files].data
-      ses[:anim_files].set( msg, anim_files )
-      unless anim_files.include? selected_anim
+    filelist = anim_files(true)
+    if filelist != ses[:anim_files].data
+      ses[:anim_files].set( msg, filelist )
+      unless filelist.include? selected_anim
         ses[:anim_select].set( msg, anim_first )
       end
     end
