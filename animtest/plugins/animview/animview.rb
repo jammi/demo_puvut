@@ -22,7 +22,6 @@ class PupuAnim < GUIPlugin
   end
   def get( req, res, ses )
     uri = req.fullpath
-    puts "get: #{uri}"
     unless valid_uri( uri )
       res.status = 404
       res['Content-Type'] = 'text/plain'
@@ -33,7 +32,8 @@ class PupuAnim < GUIPlugin
     res['Content-Type'] = 'text/html; charset=UTF-8'
     res['Date'] = httime( Time.now )
     res['Cache-Control'] = 'no-cache'
-    svg_path = File.expand_path( ses_data(ses,:anim_select)+'.svg', anim_dir )
+    anim_file = uri.split('/')[-1].split('.')[0]
+    svg_path = File.expand_path( anim_file+'.svg', anim_dir )
     anim_speed = ses_data(ses,:anim_speed)
     html_data = @build.build_html( svg_path, false, anim_speed )
     res.body = html_data
