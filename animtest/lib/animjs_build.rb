@@ -13,9 +13,18 @@ class AnimJSBuild
     @animpath = File.expand_path( 'anim', projpath )
   end
   def read_svg_paths( svgfile )
+    # rounds coordinaties to closest integer using optionally up/downscaling
     def reducepath(pdata,scale=0.1)
       numre = /([0-9\.]+)/s
       pdata.gsub(numre) { |n| (scale*n.to_f).round.to_s }
+    end
+    # verifies the layers are identical in structure
+    def verify_layers( layer_names, layers_arr )
+      pts = [[]*layers_arr.length]
+      num_paths = layer_arr.first.length
+      layers_arr.each_with_index do |layer_arr,i|
+        warn "#{svgfile}: #{layer_names[i]} path #{i} length mismatch: #{layer_arr.length} != #{num_paths}" if layer_arr.length != num_paths
+      end
     end
     svgdata  = File.read( svgfile )
     svg = Nokogiri::XML( svgdata )
@@ -30,11 +39,13 @@ class AnimJSBuild
       layers[name] = paths.dup
     end
     layers_arr = []
-    layers.keys.sort.each do |key|
+    layer_keys = layers.keys.sort
+    layer_keys.each do |key|
       paths = layers[key]
       paths.map! { |path| reducepath( path, 1.0 ) }
       layers_arr << paths
     end
+    verify_layers( layer_keys, layers_arr )
     layers_arr
   end
   def build_svgs
