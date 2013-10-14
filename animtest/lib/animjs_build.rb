@@ -1,6 +1,7 @@
 
 require 'nokogiri'
 require 'json'
+require 'pp'
 
 class AnimJSBuild
   def tmpldata
@@ -19,11 +20,28 @@ class AnimJSBuild
       pdata.gsub(numre) { |n| (scale*n.to_f).round.to_s }
     end
     # verifies the layers are identical in structure
-    def verify_layers( layer_names, layers_arr )
-      pts = [[]*layers_arr.length]
-      num_paths = layer_arr.first.length
+    def verify_layers( svgfile, layer_names, layers_arr )
+      first_layer = layers_arr.first
+      num_paths = first_layer.length
+      pts = []
+      first_layer.each do |path|
+        pts << path.split(' ').map { |c| c[0] }
+      end
       layers_arr.each_with_index do |layer_arr,i|
-        warn "#{svgfile}: #{layer_names[i]} path #{i} length mismatch: #{layer_arr.length} != #{num_paths}" if layer_arr.length != num_paths
+        if layer_arr.length != num_paths
+          warn "#{svgfile}: #{layer_names[i]}: path count mismatch: #{layer_arr.length} != #{num_paths}"
+        end
+        layer_arr.each_with_index do |path,j|
+          splitpath = path.split(' ')
+          if splitpath.length != pts[j].length
+            warn "#{svgfile}: #{layer_names[i]}: path #{j} parts count: #{splitpath.length} != #{pts[j].length}"
+          end
+          splitpath.each_with_index do |c,k|
+            if c[0] != pts[j][k]
+              warn "#{svgfile}: #{layer_names[i]}: path #{j} structure mismatch; index #{k} #{c[0]} != #{pts[j][k]}"
+            end
+          end
+        end
       end
     end
     svgdata  = File.read( svgfile )
@@ -45,43 +63,45 @@ class AnimJSBuild
       paths.map! { |path| reducepath( path, 1.0 ) }
       layers_arr << paths
     end
-    verify_layers( layer_keys, layers_arr )
+    verify_layers( svgfile, layer_keys, layers_arr )
     layers_arr
   end
   def build_svgs
+    anims = {}
     Dir.entries( @animpath ).each do |file|
       if file.end_with?('.svg')
         svgfile = File.expand_path( file, @animpath )
         anim_name = file.split('.').first
-        anim = {
-          'info' => {},
-          'data' => read_svg_paths( svgfile )
-        }
-        puts anim_name
-        pp anim
+        anims[anim_name] = read_svg_paths( svgfile )
+        # puts anim_name
+        # pp anim
         # exit
       end
     end
+    anims
   end
-  def foo
-    jslines = []
-    layers.keys.sort.each do |key|
-      value = reducepath( layers[key], 1.0 )
-      jslines << "    // #{key}:\n    '#{value}'"
+  def build
+    svgs = JSON.pretty_generate( build_svgs )
+    js_files = {}
+    Dir.entries( @jspath ).each do |file|
+      if file.end_with?('.js')
+        jsfile = File.expand_path( file, @jspath )
+        ( js_order, js_name ) = file.split('.').first.split('_')
+        puts "#{js_order.inspect}, #{js_name.inspect}"
+        js_data = File.read( jsfile )
+        if js_name == 'animdata'
+          js_data.gsub!('{}','  '+svgs.gsub("\n","\n  "))
+        end
+        js_files[js_order] = "/** #{js_name} **/\n#{js_data}"
+      end
     end
-    jsdata = jslines.join(",\n")
-    re = /(frames \= \[\n)(.*?)(\n  \],\n)/m
-    newhtml = htmldata.gsub(
-      re,  "\\1#{jsdata}\\3"
-    ).gsub(
-      "dur: '1000ms',",
-      "dur: '#{animspeed}ms',"
-    )
-    return newhtml if htmlpath == false
-    html = File.open(htmlpath,'w')
-    html.write( newhtml )
-    html.close
+    js_arr = []
+    js_files.keys.sort.each do |js_order|
+      js_arr.push( js_files[js_order] )
+    end
+    js_arr.join('')
   end
 end
-require 'pp'
-AnimJSBuild.new.build_svgs
+if $0 == __FILE__
+  puts AnimJSBuild.new.build
+end
