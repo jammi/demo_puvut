@@ -1,12 +1,8 @@
 
 require 'nokogiri'
 require 'json'
-require 'pp'
 
 class AnimJSBuild
-  def tmpldata
-    File.read(@tmplpath)
-  end
   def initialize
     libpath = File.split( __FILE__ )[0]
     projpath = File.expand_path( '../../', libpath )
@@ -73,21 +69,18 @@ class AnimJSBuild
         svgfile = File.expand_path( file, @animpath )
         anim_name = file.split('.').first
         anims[anim_name] = read_svg_paths( svgfile )
-        # puts anim_name
-        # pp anim
-        # exit
       end
     end
     anims
   end
-  def build
+  def build_js
     svgs = JSON.pretty_generate( build_svgs )
     js_files = {}
     Dir.entries( @jspath ).each do |file|
       if file.end_with?('.js')
         jsfile = File.expand_path( file, @jspath )
         ( js_order, js_name ) = file.split('.').first.split('_')
-        puts "#{js_order.inspect}, #{js_name.inspect}"
+        # puts "#{js_order.inspect}, #{js_name.inspect}"
         js_data = File.read( jsfile )
         if js_name == 'animdata'
           js_data.gsub!('{}','  '+svgs.gsub("\n","\n  "))
@@ -103,5 +96,5 @@ class AnimJSBuild
   end
 end
 if $0 == __FILE__
-  puts AnimJSBuild.new.build
+  puts AnimJSBuild.new.build_js
 end

@@ -1,10 +1,12 @@
 require 'nokogiri'
+require_relative 'animjs_build'
 class AnimHTMLBuild
   def tmpldata
     File.read(@tmplpath)
   end
   def initialize( tmplpath )
     @tmplpath = tmplpath
+    @jsbuild = AnimJSBuild.new
   end
   def build_html( svgpath, htmlpath, animspeed=1000 )
     svgdata  = File.read(svgpath)
@@ -38,5 +40,8 @@ class AnimHTMLBuild
     html = File.open(htmlpath,'w')
     html.write( newhtml )
     html.close
+  end
+  def build_html2
+    tmpldata.gsub( '---', @jsbuild.build_js )
   end
 end
