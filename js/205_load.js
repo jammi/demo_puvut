@@ -33,7 +33,6 @@
         ruAnims.push( createSVGRotAnim( rusetti, t+4500, 1000, 0, -30, 60 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+5500, 1000, 0, 60, -90 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+6500, 500, 0, -90, 90 ) );
-        // ruAnims.push( createSVGRotAnim( rusetti, 7000, 3000, 'indefinite', 90, 1170 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+7000, 3000, 'indefinite', 90, 1170 ) );
         return function(){
           for( i in anims ){ removeElem( anims[i] ); }

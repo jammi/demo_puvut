@@ -13,8 +13,8 @@
 
     if( next ){
       item = timeline[next];
-      endTime = item.time;
       console.log('next:',next,item);
+      endTime = item.time;
       next = item.next;
       prevKill = item.init(runTime);
       prevItem = item;
