@@ -381,12 +381,14 @@ window.addEventListener('load',function(){
       ]
     ]
   },
-/** timeline **/
+/** timeline0 **/
   next = 'load',
   prevKill,
   prevItem,
   timeline = {
+/** load **/
     load: {
+      // does the suit and tie thing
       init: function(t){
         var
         paths = frames.puku[0],
@@ -430,25 +432,10 @@ window.addEventListener('load',function(){
       time: 7000,
       next: 'intro'
     },
-    intro: {
-      init: function(t){
-        var
-        _init = prevItem,
-        i,
-        rusetti = _init.rusetti,
-        ruPath  = _init.ruPath,
-        ruAnims = _init.ruAnims;
-        return function(){
-          for( i in ruAnims ){ removeElem( ruAnims[i] ); }
-          removeElem( rusetti );
-        };
-      },
-      time: 15000,
-      next: 'plant'
-    },
+/** plant **/
+    // morphs the tie into a seed
     plant: {
       init: function(t){
-        console.log('plant');
         var
         paths = frames.rusetti,
         path0 = transSVGPath( paths[0][0], [ 480, 210 ], 1 ),
@@ -477,16 +464,21 @@ window.addEventListener('load',function(){
       time: 2300,
       next: 'plant2'
     },
+/** plant2 **/
+    // grows the plant
     plant2: {
       time: 0,
       next: 'end',
       init: function(t){}
     },
+/** end **/
+    // reloads the page
     end: {
       init: function(t){
         window.location.reload(true);
       }
     }
+/** timeline1 **/
   },
   runTime = 0,
   nextStep = function(){
