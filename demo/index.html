@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html><head><title>Puvut</title>
+<style type="text/css">
+body {background:#000;}
+</style>
+<script type="text/javascript">
+/** header **/
+(function(){
+  var _resizer = window.addEventListener('resize',function(){
+    window.removeEventListener(_resizer);
+    setTimeout( function(){window.location.reload(true);}, 500 );
+  });
+window.addEventListener('load',function(){
+  var
+  w = window,
+  d = window.document,
+  b = d.body,
+  u = undefined,
+  svgNS = 'http://www.w3.org/2000/svg',
+  now = function(){ return new Date().getTime(); },
+/** elemutil **/
+  setStyles = function(e,style){
+    for( var k in style ){
+      e.style[k] = style[k];
+    }
+  },
+  setAttrs = function(e,attrs){
+    for( var k in attrs ){
+      if( k === 'style' ){ continue; }
+      v = attrs[k];
+      e.setAttribute( k, v )
+    }
+    if( attrs.style ){
+      setStyles( e, attrs.style );
+    }
+  },
+  createElem = function(p,type,attrs){
+    if( p === u ){ p = b; }
+    if( type === u ){ type = 'div'; }
+    var e = d.createElement(type);
+    if( attrs !== u ){
+      setAttrs(e,attrs);
+    }
+    p.appendChild( e );
+    return e;
+  },
+  createElemNS = function(p,type,ns,attrs){
+    if( p === u ){ p = b; }
+    if( type === u ){ type = 'div'; }
+    var e = d.createElementNS(ns,type);
+    if( attrs !== u ){
+      setAttrs(e,attrs);
+    }
+    p.appendChild( e );
+    return e;
+  },
+  removeElem = function(elem){
+    elem.parentNode.removeChild(elem);
+  },
+/** svgutil **/
+  createSVG = function(p,rect,viewBox){
+    if(!rect){
+      rect = [0,0,320,320];
+    }
+    if(!viewBox){
+      viewBox = '0 0 320 320';
+    }
+    var
+    x = rect[0],
+    y = rect[1],
+    w = rect[2],
+    h = rect[3];
+    return createElemNS( b, 'svg', svgNS, {
+      style: {
+        left: x+'px', top: y+'px',
+        width: w+'px', height: h+'px'
+      },
+      xmlns: svgNS,
+      viewBox: viewBox,
+      preserveAspectRatio: 'xMidYMid slice',
+      version: '1.1'
+    });
+  },
+  svgPathMatch = {
+    instr: /([a-zA-Z])([0-9]+?),([0-9]+?)/,
+    coord: /([0-9]+?),([0-9]+?)/
+  },
+  transSVGPath = function( path, offset, scale ){
+    if(!offset){ offset = [0,0]; }
+    if(!scale){  scale  = 1.0; }
+    var
+    scalePath = [],
+    splitPath = path.split(' '),
+    offsetX = offset[0],
+    offsetY = offset[1],
+    chr, instr, coords, i, x, y;
+    for( i in splitPath ){
+      instr = splitPath[i];
+      if( instr == 'z' ){
+        scalePath.push( instr );
+      }
+      else if( svgPathMatch.instr.test( instr ) ){
+        chr = instr[0];
+        coords = instr.slice(1).split(',');
+        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
+        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
+        scalePath.push( chr+x.toString()+','+y.toString() );
+      }
+      else if( svgPathMatch.coord.test( instr ) ){
+        coords = instr.split(',');
+        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
+        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
+        scalePath.push( x.toString()+','+y.toString() );
+      }
+      else{
+        console.warn('undefined instr:',instr);
+      }
+    }
+    return scalePath.join(' ');
+  },
+  scaleSVGPath = function( path, scale ){
+    return transSVGPath( path, null, scale );
+  },
+  offsetSVGPath = function( path, offset ){
+    return transSVGPath( path, offset, null );
+  },
+  svgRect = (function(){
+    var
+    rect = [ 0,0,640,360 ],
+    w = window.innerWidth,
+    h = window.innerHeight,
+    asp = Math.round(w/h*10);
+    if( asp < 18 ){
+      rect[2] = w;
+      rect[3] = Math.round( w/1.777 );
+    }
+    else {
+      rect[2] = Math.round( h*1.777 );
+      rect[3] = h;
+    }
+    return rect;
+  })(),
+  svgDoc = createSVG( b, svgRect, '0,0,1280,720' ),
+  createSVGAnim = function( elem, begin, dur, repeat, attr, values ){
+    return createElemNS( elem, 'animate', svgNS, {
+      begin: begin+'ms',
+      dur: dur+'ms',
+      repeatCount: repeat,
+      attributeName: attr,
+      values: values
+    } );
+  },
+  setSVGAttrs = function( elem, attrs ){
+    for( var i in attrs ){
+      elem.setAttributeNS( null, i, attrs[i] );
+    }
+  },
+  createSVGRotAnim = function( parent, begin, dur, repeat, deg0, deg1, x, y ){
+    var parBB = parent.getBBox();
+    if( x == null ){ x = parBB.x+parBB.width/2 }
+    if( y == null ){ y = parBB.y+parBB.height/2 }
+    return createElemNS( parent, 'animateTransform', svgNS, {
+      attributeName: 'transform',
+      attributeType: 'XML',
+      type: 'rotate',
+      begin: begin+'ms',
+      dur: dur+'ms',
+      repeatCount: repeat,
+      from: deg0+' '+x+' '+y,
+      to: deg1+' '+x+' '+y
+    } );
+  },
+  createSVGScaleAnim = function( parent, begin, dur, repeat, scale0, scale1 ){
+    var
+    parBB = parent.getBBox(),
+    x = parBB.x+parBB.width/2,
+    y = parBB.y+parBB.height/2;
+    return createElemNS( parent, 'animateTransform', svgNS, {
+      attributeName: 'transform',
+      attributeType: 'XML',
+      type: 'scale',
+      begin: begin+'ms',
+      dur: dur+'ms',
+      repeatCount: repeat,
+      from: scale0,
+      to: scale1
+    } );
+  },
+  createSVGPath = function( parent, path, stroke, strokeWidth, fill ){
+    var attr = {
+      d: path,
+      'stroke-linecap': 'round'
+    };
+    if( stroke != null ){ attr.stroke = stroke; }
+    if( strokeWidth != null ){ attr['stroke-width'] = strokeWidth; }
+    if( fill != null ){ attr.fill = fill }
+    return createElemNS( parent, 'path', svgNS, attr );
+  },
+  createSVGGroup = function( parent, attr ){
+    return createElemNS( parent, 'g', svgNS, attr );
+  },
+/** animdata **/
+  frames =   {
+    "bunny_base": [
+      [
+        "M59,94 L79,74 L99,64 L80,44 L78,16 L95,37 L108,62 L117,64 L123,34 L139,14 L136,40 L125,73 L139,94 L199,64 L249,74 L259,44 L276,53 L279,64 L269,84 L259,84 L239,124 L256,189 L193,198 L188,188 L234,175 L179,134 L156,139 L152,164 L177,188 L169,194 L136,170 L129,144 L109,114 L79,124 L59,114 L59,94 z"
+      ],
+      [
+        "M41,103 L61,83 L81,73 L62,53 L59,25 L76,46 L89,71 L99,73 L105,43 L121,23 L118,49 L106,82 L121,103 L181,73 L231,83 L241,53 L257,62 L261,73 L251,93 L241,93 L221,133 L237,198 L174,207 L169,197 L215,184 L161,143 L137,148 L134,173 L158,197 L151,203 L118,179 L111,153 L91,123 L61,133 L41,123 L41,103 z"
+      ]
+    ],
+    "bunny_dramatic": [
+      [
+        "M179,161 L196,157 L198,148 L189,139 L201,140 L216,142 L201,148 L203,157 L212,165 L200,160 L179,161 z",
+        "M115,221 L125,182 L145,164 L165,130 L133,149 L109,152 L124,128 L171,111 L185,104 L208,107 L227,107 L243,167 L239,179",
+        "M223,128 L225,148 L236,173 L243,188 L243,221",
+        "M178,123 L189,128 L194,124 L192,119 L190,111 L182,111 L178,124",
+        "M215,129 L223,126 L222,115 L215,113 L211,124 L215,129 z"
+      ],
+      [
+        "M139,208 L172,200 L177,182 L158,164 L183,165 L214,169 L184,183 L187,200 L205,217 L182,207 L139,208 z",
+        "M10,332 L30,251 L70,215 L112,145 L47,184 L-2,191 L28,140 L124,107 L150,93 L198,98 L236,99 L267,220 L261,245",
+        "M228,141 L232,182 L255,232 L267,263 L267,332",
+        "M136,132 L160,141 L170,133 L166,122 L160,107 L145,107 L136,132",
+        "M211,144 L228,138 L225,114 L211,112 L204,132 L211,144 z"
+      ],
+      [
+        "M96,238 L164,221 L173,183 L135,147 L185,149 L249,157 L188,185 L194,220 L231,256 L183,234 L96,238 z",
+        "M-169,490 L-128,324 L-45,251 L39,108 L-93,186 L-194,202 L-131,98 L64,30 L119,1 L216,11 L294,13 L359,262 L345,313",
+        "M278,98 L285,184 L333,287 L359,350 L359,490",
+        "M89,80 L138,98 L158,84 L151,61 L139,30 L108,30 L89,82",
+        "M242,105 L278,92 L272,45 L242,39 L228,82 L242,105 z"
+      ]
+    ],
+    "bunny_eats": [
+      [
+        "M51,137 L66,100 L82,89 L88,65 L117,18 L119,63 L95,88 L105,89 L141,61 L177,51 L149,86 L112,99 L145,131 L204,132 L237,160 L270,218 L288,208 L292,233 L285,249 L271,249 L242,269 L195,271 L119,272 L119,261 L168,258 L171,210 L118,181 L84,196 L78,213 L63,206 L74,178 L112,153 L94,149 L75,159 L59,151 L51,137 z"
+      ],
+      [
+        "M51,164 L57,124 L70,110 L74,76 L88,32 L95,77 L82,106 L92,106 L119,75 L155,52 L135,91 L102,113 L141,138 L199,126 L237,146 L282,195 L298,181 L307,205 L304,222 L290,225 L276,248 L222,266 L146,265 L144,251 L213,247 L175,212 L122,197 L105,220 L99,233 L86,228 L90,207 L112,171 L95,167 L79,181 L62,176 L51,164 z"
+      ],
+      [
+        "M59,194 L62,154 L79,137 L85,112 L110,58 L111,96 L91,136 L104,135 L130,98 L157,71 L149,115 L112,139 L136,153 L185,137 L231,134 L287,169 L298,151 L314,171 L315,189 L303,196 L276,251 L237,264 L169,266 L166,252 L225,246 L198,222 L138,216 L128,241 L124,267 L112,264 L113,231 L118,188 L103,193 L94,206 L73,209 L59,194 z"
+      ],
+      [
+        "M54,210 L56,184 L63,162 L77,116 L111,90 L101,123 L78,151 L86,153 L112,130 L151,101 L130,143 L98,157 L130,160 L178,135 L218,119 L281,139 L297,115 L312,130 L310,158 L297,162 L302,189 L264,258 L170,261 L170,247 L226,243 L198,218 L137,223 L130,245 L136,270 L120,271 L110,243 L121,198 L105,204 L84,226 L66,224 L54,210 z"
+      ],
+      [
+        "M52,214 L49,171 L64,151 L70,118 L96,76 L90,122 L75,154 L86,153 L109,118 L136,85 L128,129 L100,155 L130,159 L174,133 L217,118 L276,144 L285,129 L301,133 L308,152 L287,159 L293,185 L263,256 L170,263 L174,251 L219,240 L190,210 L136,222 L129,248 L133,266 L120,270 L115,242 L117,203 L98,192 L80,228 L66,216 L52,214 z"
+      ],
+      [
+        "M52,214 L49,171 L64,151 L70,118 L96,76 L90,122 L75,154 L86,153 L109,118 L136,85 L128,129 L100,155 L130,159 L174,133 L217,118 L276,144 L285,129 L301,133 L308,152 L287,159 L293,185 L263,256 L170,263 L174,251 L219,240 L190,210 L136,222 L129,248 L133,266 L120,270 L115,242 L117,203 L98,192 L76,222 L63,220 L52,214 z"
+      ]
+    ],
+    "bunny_hop": [
+      [
+        "M65,137 L82,116 L102,106 L81,90 L76,46 L101,74 L110,104 L119,104 L118,70 L139,43 L142,82 L128,109 L142,136 L211,129 L257,140 L262,129 L279,139 L285,161 L273,165 L262,154 L247,190 L259,231 L196,240 L191,230 L237,217 L184,210 L159,182 L155,206 L180,230 L172,236 L139,212 L132,186 L112,156 L90,163 L69,154 L65,137 z"
+      ],
+      [
+        "M67,104 L73,84 L85,68 L105,30 L139,19 L122,45 L99,62 L112,62 L131,43 L163,30 L148,58 L123,67 L159,87 L201,36 L249,44 L249,16 L266,21 L270,31 L269,49 L263,58 L257,101 L258,132 L282,192 L272,199 L234,137 L205,107 L171,142 L122,162 L112,191 L100,191 L106,157 L140,140 L117,109 L99,123 L77,121 L67,104 z"
+      ],
+      [
+        "M69,136 L81,122 L102,109 L93,82 L97,48 L111,81 L110,107 L119,108 L133,83 L167,64 L151,96 L128,113 L142,139 L207,125 L253,133 L268,122 L279,124 L282,145 L273,155 L259,153 L242,176 L257,198 L228,248 L215,245 L232,203 L180,195 L159,185 L145,218 L136,249 L120,250 L129,218 L132,189 L112,159 L85,164 L70,154 L69,136 z"
+      ],
+      [
+        "M67,138 L82,116 L102,106 L81,85 L77,50 L102,71 L110,104 L119,104 L122,72 L141,42 L142,82 L128,109 L142,136 L203,129 L257,140 L262,129 L279,139 L282,158 L272,166 L262,154 L247,190 L259,231 L196,240 L191,230 L237,217 L184,210 L159,182 L155,206 L180,230 L172,236 L139,212 L132,186 L112,156 L89,162 L70,154 L67,138 z"
+      ]
+    ],
+    "bunny_hoptoass": [
+      [
+        "M60,144 L70,131 L90,121 L78,88 L79,51 L97,79 L98,119 L107,119 L107,81 L127,52 L134,82 L116,124 L135,145 L212,141 L245,152 L255,142 L272,145 L273,167 L258,173 L250,166 L244,203 L248,244 L185,253 L180,243 L225,230 L173,223 L145,196 L144,220 L139,252 L127,251 L128,225 L128,192 L101,170 L77,174 L59,164 L60,144 z"
+      ],
+      [
+        "M59,131 L72,113 L92,103 L78,70 L78,33 L100,61 L101,101 L111,101 L112,65 L132,39 L135,71 L120,106 L135,130 L194,144 L243,168 L254,155 L270,161 L271,183 L256,189 L248,182 L236,207 L235,244 L172,253 L167,243 L213,230 L158,216 L132,187 L129,212 L140,237 L128,240 L113,212 L111,173 L102,153 L80,157 L67,148 L59,131 z"
+      ],
+      [
+        "M60,149 L66,125 L86,109 L75,73 L88,34 L97,74 L96,108 L105,110 L107,71 L129,41 L133,81 L112,112 L137,144 L183,160 L219,186 L244,231 L254,214 L269,222 L274,238 L256,248 L242,250 L179,261 L111,261 L117,246 L162,247 L149,219 L107,186 L97,205 L92,227 L78,224 L83,192 L108,165 L98,160 L85,168 L68,166 L60,149 z"
+      ]
+    ],
+    "bunny_leap": [
+      [
+        "M70,136 L84,116 L100,109 L103,72 L135,48 L123,86 L109,107 L117,107 L133,83 L162,60 L154,92 L126,112 L140,139 L206,146 L257,142 L262,131 L279,140 L284,158 L276,162 L262,156 L247,192 L258,233 L195,241 L190,232 L236,219 L184,211 L157,185 L155,208 L179,232 L172,238 L139,214 L132,188 L110,159 L89,165 L73,156 L70,136 z"
+      ],
+      [
+        "M71,102 L78,76 L86,60 L98,35 L145,19 L124,43 L98,61 L111,61 L131,44 L168,32 L149,58 L121,66 L159,87 L201,36 L249,44 L252,21 L266,21 L270,31 L269,47 L263,58 L257,101 L258,132 L282,192 L271,200 L234,137 L205,107 L171,142 L122,162 L112,191 L101,187 L106,157 L140,140 L117,109 L102,118 L84,118 L71,102 z"
+      ],
+      [
+        "M74,85 L84,71 L104,54 L119,26 L170,11 L139,37 L112,60 L119,62 L147,40 L193,31 L164,56 L132,63 L159,73 L212,57 L270,50 L287,35 L302,31 L308,40 L298,54 L283,64 L277,107 L285,133 L321,176 L317,187 L258,142 L214,131 L153,146 L115,166 L89,177 L84,169 L109,150 L133,125 L125,109 L95,110 L78,100 L74,85 z"
+      ],
+      [
+        "M76,134 L86,118 L101,106 L128,71 L163,70 L139,89 L110,107 L119,108 L147,86 L183,92 L155,109 L127,113 L141,139 L211,126 L253,133 L267,122 L279,124 L282,145 L273,155 L259,153 L242,176 L263,202 L228,246 L214,241 L232,203 L180,195 L158,185 L144,218 L136,249 L123,250 L129,218 L131,189 L111,159 L93,163 L76,155 L76,134 z"
+      ]
+    ],
+    "bunny_loopeater": [
+      [
+        "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,197 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L61,215 L47,203 L34,201 z"
+      ],
+      [
+        "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,197 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L57,208 L44,206 L34,201 z"
+      ]
+    ],
+    "iso_sieni": [
+      [
+        "M141,160 L133,189 L138,213 L156,226 L173,225 L188,212 L187,189 L178,161 L195,160 L218,156 L206,124 L184,104 L154,95 L127,106 L108,130 L102,158 L118,161 L141,160 z"
+      ]
+    ],
+    "kanttis": [
+      [
+        "M122,127 L142,118 L164,123 L196,119 L199,131 L183,138 L172,149 L167,200 L157,202 L157,151 L141,135 L122,127 z"
+      ]
+    ],
+    "kivi1": [
+      [
+        "M125,215 L114,195 L147,160 L181,169 L208,163 L224,190 L228,211 C125,216 125,215 125,215 z"
+      ]
+    ],
+    "kivi2": [
+      [
+        "M144,167 L155,149 L170,151 L176,158 L174,167 L162,172 L144,167 z"
+      ]
+    ],
+    "kivi3": [
+      [
+        "M169,139 L145,140 L128,160 L133,176 L188,181 L192,161 L169,139 z"
+      ]
+    ],
+    "pikkusieni": [
+      [
+        "M155,112 L140,125 L137,142 L155,135 L149,204 L159,209 L171,208 L176,201 L167,134 L183,142 L181,129 L172,117 L155,112 z"
+      ]
+    ],
+    "puku": [
+      [
+        "M144,94 L107,73 L94,97 L130,119 L144,94 z",
+        "M159,119 L144,94 L179,73 L192,96 L159,119 z",
+        "M144,94 L144,236",
+        "M149,134 C148,134 147,133 147,132 C147,130 148,129 149,129 C151,129 152,130 152,132 C152,133 151,134 149,134 z",
+        "M149,167 C148,167 147,166 147,164 C147,163 148,162 149,162 C151,162 152,163 152,164 C152,166 151,167 149,167 z",
+        "M149,200 C148,200 147,199 147,197 C147,196 148,195 149,195 C151,195 152,196 152,197 C152,199 151,200 149,200 z",
+        "M30,119 L94,97 L30,119 z",
+        "M30,119 L21,260",
+        "M192,97 L258,119 L267,268",
+        "M30,119 L56,148 L67,262",
+        "M258,119 L231,155 L221,262",
+        "M94,97 L73,110 L82,115 L70,127 L144,240 L94,97 z",
+        "M192,97 L208,112 L200,115 L212,126 L139,256 L192,97 z",
+        "M139,256 L139,268",
+        "M148,266 C146,266 145,265 145,263 C145,261 146,260 148,260 C150,260 151,261 151,263 C151,265 150,266 148,266 z"
+      ]
+    ],
+    "rusetti": [
+      [
+        "M61,111 L121,81 L121,41 L121,81 L161,81 L161,41 L161,41 L161,81 L221,111 L221,11 L161,41 L121,41 L61,11 L61,111 z"
+      ],
+      [
+        "M61,51 L141,150 L141,150 L141,231 L141,231 L141,149 L142,151 L141,150 L221,51 L161,91 L141,150 L141,150 L121,91 L61,51 z"
+      ],
+      [
+        "M132,217 L141,217 L141,217 L141,231 L141,231 L141,217 L141,217 L141,217 L149,217 L147,211 L141,217 L141,217 L134,211 L132,217 z"
+      ]
+    ],
+    "rusetti_still": [
+      [
+        "M61,111 L121,81 L121,41 L121,81 L161,81 L161,41 L161,41 L161,81 L221,111 L221,11 L161,41 L121,41 L61,11 L61,111 z"
+      ]
+    ],
+    "taimi": [
+      [
+        "M151,221 L151,221 L151,221 L151,231 L151,221 L151,221 L151,221 L151,221 L151,221 L151,221 L151,221 z"
+      ],
+      [
+        "M161,51 L161,61 L151,51 L151,231 L151,51 L141,61 L141,51 L151,51 L151,51 L151,51 L161,51 z"
+      ],
+      [
+        "M211,11 L231,51 L151,51 L151,231 L151,51 L71,51 L91,11 L151,51 L151,51 L151,51 L211,11 z"
+      ]
+    ],
+    "taimi2": [
+      [
+        "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
+      ]
+    ]
+  },
+/** timeline **/
+  next = 'load',
+  prevKill,
+  prevItem,
+  timeline = {
+    load: {
+      init: function(t){
+        var
+        paths = frames.puku[0],
+        elems = [],
+        anims = [],
+        i, path, elem, rusetti, ruAnims = [];
+        for( i in paths ){
+          path = transSVGPath( paths[i], [ 190, -55 ], 3 );
+          elem = createSVGPath( svgDoc, path, '#000', 4 );
+          elems.push( elem );
+          anims.push( createSVGAnim( elem, t, 1000, 0, 'd',
+            offsetSVGPath( path, [ 0, 720 ] )+';'+path+';' ) );
+          anims.push( createSVGAnim( elem, t, 6000, 0, 'stroke',
+            '#fff;#fff;' ) );
+          anims.push( createSVGAnim( elem, t+6000, 1000, 0, 'stroke',
+            '#fff;#000;' ) );
+        }
+        path = transSVGPath( frames.rusetti_still[0][0], [ 480, 210 ], 1 );
+        rusetti = createSVGPath( svgDoc, path, '#fff', 4, '#c33' );
+        this.rusetti = rusetti;
+        this.ruAnims = ruAnims;
+        var
+        ruPath1 = transSVGPath( path, [ 0, 0 ], 1 );
+        ruPath2 = transSVGPath( path, [ -620, -280 ], 2 );
+        ruAnims.push( createSVGAnim( rusetti, t+4500, 500, 'indefinite', 'd',
+          ruPath1+';'+ruPath2+';'+ruPath1 ) );
+        anims.push( createSVGAnim( rusetti, t, 1500, 0, 'd',
+          offsetSVGPath( path, [ 0, -600 ] )+';'+path+';' ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+1500, 1000, 0, 0, 30 ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+2500, 2000, 0, 30, -30 ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+4500, 1000, 0, -30, 60 ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+5500, 1000, 0, 60, -90 ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+6500, 500, 0, -90, 90 ) );
+        // ruAnims.push( createSVGRotAnim( rusetti, 7000, 3000, 'indefinite', 90, 1170 ) );
+        ruAnims.push( createSVGRotAnim( rusetti, t+7000, 3000, 'indefinite', 90, 1170 ) );
+        return function(){
+          for( i in anims ){ removeElem( anims[i] ); }
+          for( i in elems ){ removeElem( elems[i] ); }
+        };
+      },
+      time: 7000,
+      next: 'intro'
+    },
+    intro: {
+      init: function(t){
+        var
+        _init = prevItem,
+        i,
+        rusetti = _init.rusetti,
+        ruPath  = _init.ruPath,
+        ruAnims = _init.ruAnims;
+        return function(){
+          for( i in ruAnims ){ removeElem( ruAnims[i] ); }
+          removeElem( rusetti );
+        };
+      },
+      time: 15000,
+      next: 'plant'
+    },
+    plant: {
+      init: function(t){
+        console.log('plant');
+        var
+        paths = frames.rusetti,
+        path0 = transSVGPath( paths[0][0], [ 480, 210 ], 1 ),
+        path1 = transSVGPath( paths[1][0], [ 480, 310 ], 1.5 ),
+        path2 = transSVGPath( paths[2][0], [ 480, 340 ], 2 ),
+        elem = createSVGPath( svgDoc, path0, '#fff', 4, '#c30' ),
+        anim = createSVGAnim( elem, t, 2000, 0, 'd', [
+            path0,
+            path1,
+            path2
+          ].join(';')+';'
+        ),
+        anim2 = createSVGAnim( elem, t, 2300, 0, 'fill',
+          '#c33;#3c3;'
+        ),
+        elems = [elem],
+        // anims = [anim,anim2],
+        anims = [anim2],
+        i;
+        setTimeout()
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      },
+      time: 2300,
+      next: 'plant2'
+    },
+    plant2: {
+      time: 0,
+      next: 'end',
+      init: function(t){}
+    },
+    end: {
+      init: function(t){
+        window.location.reload(true);
+      }
+    }
+  },
+  runTime = 0,
+  nextStep = function(){
+    var
+    start = now(), end, took,
+    item,
+    endTime = false;
+
+    if( prevKill ){
+      prevKill();
+      prevKill = null;
+    }
+
+    if( next ){
+      item = timeline[next];
+      endTime = item.time;
+      console.log('next:',next,item);
+      next = item.next;
+      prevKill = item.init(runTime);
+      prevItem = item;
+    }
+    else {
+      return;
+    }
+
+    if( !endTime ){
+      endTime = 0;
+    }
+
+    end = now(); took = end-start;
+    endTime -= took - 10;
+
+    if( endTime < 10 ){ endTime = 10; }
+    runTime += endTime;
+    setTimeout( nextStep, endTime );
+  };
+  setStyles( svgDoc, {
+    borderRight: '1px solid #fc0',
+    borderBottom: '1px solid #fc0'
+  } );
+  nextStep();
+/** footer **/
+  console.log('end');
+});
+})();
+
+</script></head><body></body></html>

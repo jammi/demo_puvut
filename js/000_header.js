@@ -1,3 +1,8 @@
+(function(){
+  var _resizer = window.addEventListener('resize',function(){
+    window.removeEventListener(_resizer);
+    setTimeout( function(){window.location.reload(true);}, 500 );
+  });
 window.addEventListener('load',function(){
   var
   w = window,
