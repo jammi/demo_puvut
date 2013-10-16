@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="320" height="320" viewBox="0, 0, 320, 320">
+  <g id="Layer 1">
+    <path d="M154.859,111.733 L140.265,125.024 L136.787,141.918 L155.172,135.459 L149.209,203.531 L158.65,208.5 L170.575,208.003 L176.041,201.047 L166.6,134.465 L182.5,142.415 L180.512,128.502 L171.889,117.078 L154.859,111.733 z" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+  </g>
+  <g id="Layer 2">
+    <path d="M155,106 L136.787,123 L136.787,146 L151,140 L148.709,203.031 L158.15,208 L170.075,207.503 L175.541,200.547 L168,141 L182.5,142.415 L182.5,126 L175,111.733 L155,106 z" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+  </g>
+  <g id="Layer 3">
+    <path d="M154.359,111.233 L139.765,124.524 L136.287,141.418 L154.672,134.959 L148.709,203.031 L158.15,208 L170.075,207.503 L175.541,200.547 L166.1,133.965 L182,141.915 L180.012,128.002 L171.389,116.578 L154.359,111.233 z" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+  </g>
+  <defs/>
+</svg>
