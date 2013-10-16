@@ -126,6 +126,18 @@
       to: scale1
     } );
   },
+  createSVGMoveAnim = function( parent, begin, dur, repeat, from, to ){
+    return createElemNS( parent, 'animateTransform', svgNS, {
+      attributeName: 'transform',
+      attributeType: 'XML',
+      type: 'translate',
+      begin: begin+'ms',
+      dur: dur+'ms',
+      repeatCount: repeat,
+      from: from,
+      to: to
+    } );
+  },
   createSVGPath = function( parent, path, stroke, strokeWidth, fill ){
     var attr = {
       d: path,
@@ -138,4 +150,7 @@
   },
   createSVGGroup = function( parent, attr ){
     return createElemNS( parent, 'g', svgNS, attr );
+  },
+  createSVGGroup2 = function( parent, attr ){
+    return createElemNS( parent, 'svg', svgNS, attr );
   },

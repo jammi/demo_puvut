@@ -186,6 +186,18 @@ window.addEventListener('load',function(){
       to: scale1
     } );
   },
+  createSVGMoveAnim = function( parent, begin, dur, repeat, from, to ){
+    return createElemNS( parent, 'animateTransform', svgNS, {
+      attributeName: 'transform',
+      attributeType: 'XML',
+      type: 'translate',
+      begin: begin+'ms',
+      dur: dur+'ms',
+      repeatCount: repeat,
+      from: from,
+      to: to
+    } );
+  },
   createSVGPath = function( parent, path, stroke, strokeWidth, fill ){
     var attr = {
       d: path,
@@ -198,6 +210,9 @@ window.addEventListener('load',function(){
   },
   createSVGGroup = function( parent, attr ){
     return createElemNS( parent, 'g', svgNS, attr );
+  },
+  createSVGGroup2 = function( parent, attr ){
+    return createElemNS( parent, 'svg', svgNS, attr );
   },
 /** animdata **/
   frames =   {
@@ -277,6 +292,20 @@ window.addEventListener('load',function(){
         "M60,149 L66,125 L86,109 L75,73 L88,34 L97,74 L96,108 L105,110 L107,71 L129,41 L133,81 L112,112 L137,144 L183,160 L219,186 L244,231 L254,214 L269,222 L274,238 L256,248 L242,250 L179,261 L111,261 L117,246 L162,247 L149,219 L107,186 L97,205 L92,227 L78,224 L83,192 L108,165 L98,160 L85,168 L68,166 L60,149 z"
       ]
     ],
+    "bunny_ihme": [
+      [
+        "M40,152 L54,115 L70,104 L76,80 L106,33 L107,79 L83,103 L93,105 L129,77 L166,66 L137,101 L100,114 L133,147 L192,148 L226,175 L259,233 L277,223 L281,248 L273,264 L259,264 L230,284 L183,286 L107,288 L107,276 L156,273 L159,226 L107,196 L72,212 L66,228 L51,222 L62,194 L101,168 L82,165 L63,175 L48,166 L40,152 z"
+      ],
+      [
+        "M49,142 L64,105 L80,94 L85,70 L115,23 L117,68 L93,93 L103,95 L139,66 L175,56 L147,91 L110,104 L143,136 L192,148 L226,175 L259,226 L277,216 L281,241 L273,257 L259,257 L230,284 L183,286 L107,288 L107,276 L156,273 L159,226 L117,188 L83,204 L76,220 L62,214 L73,186 L110,158 L92,154 L73,164 L57,156 L49,142 z"
+      ],
+      [
+        "M79,102 L96,86 L115,69 L100,45 L114,1 L133,43 L127,70 L137,72 L139,44 L159,1 L163,43 L144,81 L170,118 L198,147 L226,175 L259,226 L277,216 L281,241 L273,257 L259,257 L230,284 L183,286 L107,288 L107,276 L156,273 L159,226 L130,186 L104,191 L97,207 L83,201 L94,173 L139,146 L120,128 L93,134 L79,122 L79,102 z"
+      ],
+      [
+        "M72,109 L96,86 L114,70 L102,46 L93,1 L125,44 L126,71 L136,73 L137,40 L141,1 L163,43 L144,81 L170,118 L198,147 L226,175 L259,226 L281,217 L285,242 L277,258 L259,257 L230,284 L183,286 L107,288 L107,276 L156,273 L159,226 L130,186 L108,186 L105,206 L87,202 L92,177 L139,146 L120,128 L93,134 L79,122 L72,109 z"
+      ]
+    ],
     "bunny_leap": [
       [
         "M70,136 L84,116 L100,109 L103,72 L135,48 L123,86 L109,107 L117,107 L133,83 L162,60 L154,92 L126,112 L140,139 L206,146 L257,142 L262,131 L279,140 L284,158 L276,162 L262,156 L247,192 L258,233 L195,241 L190,232 L236,219 L184,211 L157,185 L155,208 L179,232 L172,238 L139,214 L132,188 L110,159 L89,165 L73,156 L70,136 z"
@@ -293,10 +322,18 @@ window.addEventListener('load',function(){
     ],
     "bunny_loopeater": [
       [
-        "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,197 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L61,215 L47,203 L34,201 z"
+        "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,202 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L61,215 L47,203 L34,201 z"
       ],
       [
         "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,197 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L57,208 L44,206 L34,201 z"
+      ]
+    ],
+    "bunny_nuusku": [
+      [
+        "M54,125 L78,102 L96,86 L84,62 L75,17 L107,60 L108,87 L118,89 L119,56 L123,17 L145,59 L126,97 L152,134 L180,163 L208,191 L241,242 L263,233 L267,258 L259,274 L241,273 L212,300 L165,302 L89,304 L89,292 L138,289 L141,242 L112,202 L90,202 L87,222 L69,218 L74,193 L121,162 L102,144 L75,150 L61,138 L54,125 z"
+      ],
+      [
+        "M60,118 L77,102 L96,85 L81,61 L86,17 L114,59 L108,86 L118,88 L120,60 L129,17 L144,59 L125,97 L151,134 L179,163 L207,191 L240,242 L258,232 L262,257 L254,273 L240,273 L211,300 L164,302 L88,304 L88,292 L137,289 L140,242 L111,202 L85,207 L78,223 L64,217 L75,189 L120,162 L101,144 L74,150 L60,138 L60,118 z"
       ]
     ],
     "iso_sieni": [
@@ -329,6 +366,17 @@ window.addEventListener('load',function(){
         "M155,112 L140,125 L137,142 L155,135 L149,204 L159,209 L171,208 L176,201 L167,134 L183,142 L181,129 L172,117 L155,112 z"
       ]
     ],
+    "pikkusieni_lives": [
+      [
+        "M155,112 L140,125 L137,142 L155,135 L149,204 L159,209 L171,208 L176,201 L167,134 L183,142 L181,129 L172,117 L155,112 z"
+      ],
+      [
+        "M155,106 L137,123 L137,146 L151,140 L149,203 L158,208 L170,208 L176,201 L168,141 L183,142 L183,126 L175,112 L155,106 z"
+      ],
+      [
+        "M154,111 L140,125 L136,141 L155,135 L149,203 L158,208 L170,208 L176,201 L166,134 L182,142 L180,128 L171,117 L154,111 z"
+      ]
+    ],
     "puku": [
       [
         "M144,94 L107,73 L94,97 L130,119 L144,94 z",
@@ -353,10 +401,13 @@ window.addEventListener('load',function(){
         "M61,111 L121,81 L121,41 L121,81 L161,81 L161,41 L161,41 L161,81 L221,111 L221,11 L161,41 L121,41 L61,11 L61,111 z"
       ],
       [
-        "M61,51 L141,150 L141,150 L141,231 L141,231 L141,149 L142,151 L141,150 L221,51 L161,91 L141,150 L141,150 L121,91 L61,51 z"
+        "M61,82 L126,135 L126,111 L126,135 L150,135 L150,111 L150,111 L150,135 L221,82 L183,11 L150,111 L126,111 L105,11 L61,82 z"
       ],
       [
-        "M132,217 L141,217 L141,217 L141,231 L141,231 L141,217 L141,217 L141,217 L149,217 L147,211 L141,217 L141,217 L134,211 L132,217 z"
+        "M92,112 L131,215 L126,190 L131,215 L144,215 L150,190 L150,190 L144,215 L185,112 L165,90 L150,190 L126,190 L110,90 L92,112 z"
+      ],
+      [
+        "M125,205 L131,228 L127,204 L131,228 L144,228 L151,204 L151,204 L144,228 L153,205 L153,203 L151,204 L126,204 L126,203 L125,205 z"
       ]
     ],
     "rusetti_still": [
@@ -369,7 +420,7 @@ window.addEventListener('load',function(){
         "M151,221 L151,221 L151,221 L151,231 L151,221 L151,221 L151,221 L151,221 L151,221 L151,221 L151,221 z"
       ],
       [
-        "M161,51 L161,61 L151,51 L151,231 L151,51 L141,61 L141,51 L151,51 L151,51 L151,51 L161,51 z"
+        "M160,114 L160,124 L150,114 L151,231 L150,114 L140,124 L140,114 L150,114 L150,114 L150,114 L160,114 z"
       ],
       [
         "M211,11 L231,51 L151,51 L151,231 L151,51 L71,51 L91,11 L151,51 L151,51 L151,51 L211,11 z"
@@ -379,12 +430,77 @@ window.addEventListener('load',function(){
       [
         "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
       ]
+    ],
+    "taimi_gets_eaten": [
+      [
+        "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
+      ],
+      [
+        "M144,240 L145,157 L122,181 L82,183 L110,149 L145,153 L164,120 L170,130 L177,137 L145,156"
+      ],
+      [
+        "M150,210 L166,139 L128,144 L109,149 L130,124 L166,136 L163,135 L166,134 L165,136 L167,139"
+      ],
+      [
+        "M150,171 L166,139 L136,143 L120,148 L133,140 L166,136 L163,135 L166,134 L165,136 L167,139"
+      ],
+      [
+        "M151,150 L166,139 L146,152 L151,152 L149,150 L166,136 L163,135 L166,134 L165,136 L167,139"
+      ]
     ]
   },
+/** bunnyanim **/
+Bunny = (function(){
+  var BunnyObj = function(path,x,y,scale){
+    console.log('hi');
+    this.draw();
+  };
+  BunnyObj.prototype = {
+    draw: function(){
+      console.log('draw');
+    }
+  };
+  return BunnyObj;
+})(),
 /** timeline0 **/
   next = 'load',
   prevKill,
   prevItem,
+  runTime = 0,
+  nextStep = function(){
+    var
+    start = now(), end, took,
+    item,
+    endTime = false;
+
+    if( prevKill ){
+      prevKill();
+      prevKill = null;
+    }
+
+    if( next ){
+      item = timeline[next];
+      console.log('next:',next,item);
+      endTime = item.time;
+      next = item.next;
+      prevKill = item.init(runTime);
+      prevItem = item;
+    }
+    else {
+      return;
+    }
+
+    if( !endTime ){
+      endTime = 0;
+    }
+
+    end = now(); took = end-start;
+    endTime -= took - 10;
+
+    if( endTime < 10 ){ endTime = 10; }
+    runTime += endTime;
+    setTimeout( nextStep, endTime );
+  };
   timeline = {
 /** load **/
     load: {
@@ -457,22 +573,27 @@ window.addEventListener('load',function(){
         paths = frames.rusetti,
         path0 = transSVGPath( paths[0][0], [ 480, 210 ], 1 ),
         path1 = transSVGPath( paths[1][0], [ 400, 350 ], 1.5 ),
-        path2 = transSVGPath( paths[2][0], [ 340, 300 ], 2 ),
+        path2 = transSVGPath( paths[2][0], [ 340, 340 ], 2 ),
+        path3 = transSVGPath( paths[3][0], [ 410, 410 ], 1.5 ),
+        path4 = transSVGPath( paths[3][0], [ 410, 480 ], 1.5 ),
         elem = createSVGPath( svgDoc, path0, '#fff', 4, '#c30' ),
-        anim = createSVGAnim( elem, t, 1000, 0, 'd', [
+        anim = createSVGAnim( elem, t, 1100, 0, 'd', [
             path0,
             path1,
-            path2
+            path2,
+            path3,
+            path4
           ].join(';')+';'
         ),
-        anim2 = createSVGAnim( elem, t, 1100, 0, 'fill',
-          '#c33;#3c3;#c33;'
+        anim2 = createSVGAnim( elem, t, 1800, 0, 'fill',
+          '#c33;#c63;#673;#c93;#c33;'
+        ),
+        anim3 = createSVGAnim( elem, t, 1000, 0, 'stroke',
+          '#fff;#000;'
         ),
         elems = [elem],
-        // anims = [anim,anim2],
-        anims = [anim2],
+        anims = [anim,anim2,anim3],
         i;
-        setTimeout()
         return function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
@@ -484,9 +605,183 @@ window.addEventListener('load',function(){
 /** plant2 **/
     // grows the plant
     plant2: {
-      time: 0,
+      time: 4000,
+      next: 'plant3',
+      init: function(t){
+        var
+        paths = frames.taimi,
+        elem, anim,
+        path0 = transSVGPath( paths[0][0], [ 480, 550 ], 1 ),
+        path1 = transSVGPath( paths[1][0], [ 480, 550 ], 1 ),
+        path2 = transSVGPath( paths[2][0], [ 480, 550 ], 1 ),
+        elems = [],
+        anims = [],
+        i;
+        elems.push( createSVGPath( svgDoc, path0, '#fff', 4, '#390' ) );
+        anims.push( createSVGAnim( elems[0], t, 4000, 0, 'd', [
+            path0,
+            path1,
+            path2
+          ].join(';')+';'
+        ) );
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      }
+    },
+/** plant3 **/
+    // shows the plant
+    plant3: {
+      time: 1000,
+      next: 'pupuentry',
+      init: function(t){
+        var
+        paths = frames.taimi,
+        path0 = transSVGPath( paths[2][0], [ 480, 550 ], 1 );
+        this.plant = createSVGPath( svgDoc, path0, '#fff', 4, '#390' );
+        return function(){
+        };
+      }
+    },
+/** pupuentry **/
+    // shows the bunny
+    pupuentry: {
+      time: 2200,
+      next: 'pupueat',
+      init: function(t){
+        var
+        paths = frames.bunny_hop,
+        elem, anim, i,
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
+        path3 = transSVGPath( paths[3][0], [ -100, -30 ], 1.6 ),
+        group = createSVGGroup( svgDoc, {
+          transform: 'translate(1280,330)'
+        } ),
+        elems = [
+          group,
+          createSVGPath( group, path0, '#fff', 4, '#fc0' )
+        ],
+        anims = [
+          createSVGAnim( elems[1], t, 1100, 2, 'd', [
+            path0,
+            path1,
+            path2,
+            path3
+          ].join(';')+';' ),
+          createSVGMoveAnim( elems[0], t, 2200, 0, '1280,330', '700,330' )
+        ],
+        i;
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      }
+    },
+/** pupueat **/
+    // pupu sits to eat
+    pupueat: {
+      time: 1200,
+      next: 'pupueat2',
+      init: function(t){
+        var
+        paths = frames.bunny_hoptoass,
+        elem, anim, i,
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
+        group = createSVGGroup( svgDoc, {
+          transform: 'translate(700,330)'
+        } ),
+        elems = [
+          group,
+          createSVGPath( group, path2, '#fff', 4, '#fc0' )
+        ],
+        anims = [
+          createSVGAnim( elems[1], t, 1100, 0, 'd', [
+            path0,
+            path1,
+            path2
+          ].join(';')+';' )
+        ],
+        i;
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      }
+    },
+/** pupueat2 **/
+    // pupu sits to eat
+    pupueat2: {
+      time: 1100,
+      next: 'pupueat3',
+      init: function(t){
+        var
+        paths = frames.bunny_eats,
+        elem, anim, i,
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
+        path3 = transSVGPath( paths[3][0], [ -100, -30 ], 1.6 ),
+        path4 = transSVGPath( paths[4][0], [ -100, -30 ], 1.6 ),
+        path5 = transSVGPath( paths[5][0], [ -100, -30 ], 1.6 ),
+        group = createSVGGroup( svgDoc, {
+          transform: 'translate(700,330)'
+        } ),
+        elems = [
+          group,
+          createSVGPath( group, path5, '#fff', 4, '#fc0' )
+        ],
+        anims = [
+          createSVGAnim( elems[1], t, 1100, 0, 'd', [
+            path0,
+            path1,
+            path2,
+            path3,
+            path4,
+            path5
+          ].join(';')+';' )
+        ],
+        i;
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      }
+    },
+/** pupueat3 **/
+    // pupu sits to eat
+    pupueat3: {
+      time: 1800,
       next: 'end',
-      init: function(t){}
+      init: function(t){
+        var
+        paths = frames.bunny_loopeater,
+        elem, anim, i,
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
+        group = createSVGGroup( svgDoc, {
+          transform: 'translate(700,330)'
+        } ),
+        elems = [
+          group,
+          createSVGPath( group, path1, '#fff', 4, '#fc0' )
+        ],
+        anims = [
+          createSVGAnim( elems[1], t, 200, 'indefinite', 'd', [
+            path0,
+            path1
+          ].join(';')+';' )
+        ],
+        i;
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+      }
     },
 /** end **/
     // reloads the page
@@ -497,41 +792,6 @@ window.addEventListener('load',function(){
     }
 /** timeline1 **/
   },
-  runTime = 0,
-  nextStep = function(){
-    var
-    start = now(), end, took,
-    item,
-    endTime = false;
-
-    if( prevKill ){
-      prevKill();
-      prevKill = null;
-    }
-
-    if( next ){
-      item = timeline[next];
-      console.log('next:',next,item);
-      endTime = item.time;
-      next = item.next;
-      prevKill = item.init(runTime);
-      prevItem = item;
-    }
-    else {
-      return;
-    }
-
-    if( !endTime ){
-      endTime = 0;
-    }
-
-    end = now(); took = end-start;
-    endTime -= took - 10;
-
-    if( endTime < 10 ){ endTime = 10; }
-    runTime += endTime;
-    setTimeout( nextStep, endTime );
-  };
   setStyles( svgDoc, {
     borderRight: '1px solid #fc0',
     borderBottom: '1px solid #fc0'
