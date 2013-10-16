@@ -1,5 +1,5 @@
-require 'nokogiri'
 require_relative 'animjs_build'
+
 class AnimHTMLBuild
   def tmpldata
     File.read(@tmplpath)
@@ -9,27 +9,9 @@ class AnimHTMLBuild
     @jsbuild = AnimJSBuild.new
   end
   def build_html( svgpath, htmlpath, animspeed=1000 )
-    svgdata  = File.read(svgpath)
     htmldata = tmpldata
-    svg = Nokogiri::XML( svgdata )
-    svg.remove_namespaces!
-    layers = {}
-    svg.xpath("//g").each do |g|
-      name = g['id']
-      path = g.xpath("path").first['d']
-      layers[name] = path.dup
-    end
-    jslines = []
-    def reducepath(pdata,scale=0.1)
-      numre = /([0-9\.]+)/s
-      pdata.gsub(numre) { |n| (scale*n.to_f).round.to_s }
-    end
-    layers.keys.sort.each do |key|
-      value = reducepath( layers[key], 1.0 )
-      jslines << "    // #{key}:\n    '#{value}'"
-    end
-    jsdata = jslines.join(",\n")
-    re = /(frames \= \[\n)(.*?)(\n  \],\n)/m
+    jsdata = @jsbuild.svg.read_svg_paths( svgpath ).to_json
+    re = /(frames \= )(\[\])(,\n)/m
     newhtml = htmldata.gsub(
       re,  "\\1#{jsdata}\\3"
     ).gsub(

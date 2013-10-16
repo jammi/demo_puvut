@@ -43,14 +43,7 @@ window.addEventListener('load',function(){
     p.appendChild( e );
     return e;
   },
-  frames = [
-    // Layer 1:
-    'M2,10 L4,7 L7,7 L10,3 L12,3 L12,5 L8,8 L10,10 L18,9 L22,10 L23,9 L25,10 L25,11 L24,12 L22,11 L22,13 L26,16 L28,20 L27,20 L25,17 L19,15 L12,15 L9,17 L7,20 L6,20 L8,17 L9,15 L7,12 L4,13 L2,12 L2,10 z',
-    // Layer 2:
-    'M2,10 L4,7 L7,7 L9,2 L11,2 L11,4 L8,8 L10,10 L16,9 L21,10 L22,8 L24,9 L24,10 L23,12 L22,12 L22,14 L23,17 L20,21 L19,21 L21,17 L18,14 L12,15 L10,17 L11,21 L10,21 L9,17 L9,15 L7,12 L4,13 L2,12 L2,10 z',
-    // Layer 3:
-    'M2,10 L4,7 L7,7 L8,2 L10,2 L10,4 L8,8 L10,10 L15,8 L20,10 L21,8 L23,8 L23,9 L22,11 L21,11 L21,12 L21,16 L15,18 L15,17 L19,16 L17,14 L13,15 L13,17 L16,19 L15,19 L12,17 L9,15 L7,12 L4,13 L2,12 L2,10 z'
-  ],
+  frames = [],
   svgDoc = (function(){
     return createElemNS(b,'svg',svgNS,{
       style: { position: 'absolute', top: '5px', left: '5px', width: '320px', height: '320px', overflow: 'visible' },
@@ -64,19 +57,32 @@ window.addEventListener('load',function(){
   // create frames:
   (function(){
     var
-    path = createElemNS(svgDoc,'path',svgNS,{
-      d: frames[0],
-      stroke: 'rgb(117,77,39)',
-      'stroke-width': 4,
-      fill: 'rgb(153,102,51)',
-      'stroke-linecap': 'round'
-    }),
-    anim = createElemNS(path,'animate',svgNS,{
-      dur: '1000ms',
-      repeatCount: 'indefinite',
-      attributeName: 'd',
-      values: (frames.join(';')+';'+frames[0])
-    });
+    elems = [],
+    anims = [],
+    elem, anim, i, j, path, paths;
+    for( i in frames[0] ){
+      path = frames[0][i];
+      elem = createElemNS(svgDoc,'path',svgNS,{
+        d: path,
+        stroke: 'rgb(117,77,39)',
+        'stroke-width': 4,
+        fill: 'rgb(153,102,51)',
+        'stroke-linecap': 'round'
+      });
+      elems.push( elem );
+      paths = [];
+      for( j in frames ){
+        paths.push( frames[j][i] );
+      }
+      paths.push(path);
+      anim = createElemNS( elem, 'animate', svgNS, {
+        dur: '1000ms',
+        repeatCount: 'indefinite',
+        attributeName: 'd',
+        values: paths.join(';')
+      });
+      anims.push( anim );
+    }
   })();
 });
 </script>
