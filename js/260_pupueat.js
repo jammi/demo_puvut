@@ -6,15 +6,15 @@
         var
         paths = frames.bunny_hoptoass,
         elem, anim, i,
-        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
-        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
-        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.5 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
           transform: 'translate(700,330)'
         } ),
         elems = [
           group,
-          createSVGPath( group, path2, '#fff', 4, '#fc0' )
+          createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 1100, 0, 'd', [

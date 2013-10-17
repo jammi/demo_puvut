@@ -82,17 +82,13 @@ window.addEventListener('load',function(){
     });
   },
   svgPathMatch = {
-    instr: /([a-zA-Z])([0-9]+?),([0-9]+?)/,
-    coord: /([0-9]+?),([0-9]+?)/
+    instr: /([a-zA-Z])([\-0-9]+?),([0-9]+?)/,
+    coord: /([0-9]+?),([\-0-9]+?)/
   },
-  transSVGPath = function( path, offset, scale ){
-    if(!offset){ offset = [0,0]; }
-    if(!scale){  scale  = 1.0; }
+  _processSVGCoords = function( path, fn ){
     var
     scalePath = [],
     splitPath = path.split(' '),
-    offsetX = offset[0],
-    offsetY = offset[1],
     chr, instr, coords, i, x, y;
     for( i in splitPath ){
       instr = splitPath[i];
@@ -102,21 +98,37 @@ window.addEventListener('load',function(){
       else if( svgPathMatch.instr.test( instr ) ){
         chr = instr[0];
         coords = instr.slice(1).split(',');
-        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
-        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
-        scalePath.push( chr+x.toString()+','+y.toString() );
+        scalePath.push( chr+fn(parseInt(coords[0],10),parseInt(coords[1]),10) );
       }
       else if( svgPathMatch.coord.test( instr ) ){
         coords = instr.split(',');
-        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
-        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
-        scalePath.push( x.toString()+','+y.toString() );
+        scalePath.push( fn(parseInt(coords[0],10),parseInt(coords[1],10)) );
       }
       else{
         console.warn('undefined instr:',instr);
       }
     }
     return scalePath.join(' ');
+  },
+  transSVGPath = function( path, offset, scale ){
+    if(!offset){ offset = [0,0]; }
+    if(!scale){  scale  = 1.0; }
+    var
+    offsetX = offset[0],
+    offsetY = offset[1];
+    return _processSVGCoords( path, function(x,y){
+      x = Math.round( parseInt(x)*scale ) + offsetX;
+      y = Math.round( parseInt(y)*scale ) + offsetY;
+      return x.toString()+','+y.toString();
+    });
+  },
+  horizFlipSVGPath = function(path,w){
+    if(!w){ w=320; }
+    var _out = _processSVGCoords( path, function(x,y){
+      x = w-x;
+      return x.toString()+','+y.toString();
+    } );
+    return _out;
   },
   scaleSVGPath = function( path, scale ){
     return transSVGPath( path, null, scale );
@@ -226,25 +238,25 @@ window.addEventListener('load',function(){
     ],
     "bunny_dramatic": [
       [
-        "M179,161 L196,157 L198,148 L189,139 L201,140 L216,142 L201,148 L203,157 L212,165 L200,160 L179,161 z",
         "M115,221 L125,182 L145,164 L165,130 L133,149 L109,152 L124,128 L171,111 L185,104 L208,107 L227,107 L243,167 L239,179",
         "M223,128 L225,148 L236,173 L243,188 L243,221",
         "M178,123 L189,128 L194,124 L192,119 L190,111 L182,111 L178,124",
-        "M215,129 L223,126 L222,115 L215,113 L211,124 L215,129 z"
+        "M215,129 L223,126 L222,115 L215,113 L211,124 L215,129 z",
+        "M179,161 L196,157 L198,148 L189,139 L201,140 L216,142 L201,148 L203,157 L212,165 L200,160 L179,161 z"
       ],
       [
-        "M139,208 L172,200 L177,182 L158,164 L183,165 L214,169 L184,183 L187,200 L205,217 L182,207 L139,208 z",
         "M10,332 L30,251 L70,215 L112,145 L47,184 L-2,191 L28,140 L124,107 L150,93 L198,98 L236,99 L267,220 L261,245",
         "M228,141 L232,182 L255,232 L267,263 L267,332",
         "M136,132 L160,141 L170,133 L166,122 L160,107 L145,107 L136,132",
-        "M211,144 L228,138 L225,114 L211,112 L204,132 L211,144 z"
+        "M211,144 L228,138 L225,114 L211,112 L204,132 L211,144 z",
+        "M139,208 L172,200 L177,182 L158,164 L183,165 L214,169 L184,183 L187,200 L205,217 L182,207 L139,208 z"
       ],
       [
-        "M96,238 L164,221 L173,183 L135,147 L185,149 L249,157 L188,185 L194,220 L231,256 L183,234 L96,238 z",
         "M-169,490 L-128,324 L-45,251 L39,108 L-93,186 L-194,202 L-131,98 L64,30 L119,1 L216,11 L294,13 L359,262 L345,313",
         "M278,98 L285,184 L333,287 L359,350 L359,490",
         "M89,80 L138,98 L158,84 L151,61 L139,30 L108,30 L89,82",
-        "M242,105 L278,92 L272,45 L242,39 L228,82 L242,105 z"
+        "M242,105 L278,92 L272,45 L242,39 L228,82 L242,105 z",
+        "M96,238 L164,221 L173,183 L135,147 L185,149 L249,157 L188,185 L194,220 L231,256 L183,234 L96,238 z"
       ]
     ],
     "bunny_eats": [
@@ -265,6 +277,16 @@ window.addEventListener('load',function(){
       ],
       [
         "M52,214 L49,171 L64,151 L70,118 L96,76 L90,122 L75,154 L86,153 L109,118 L136,85 L128,129 L100,155 L130,159 L174,133 L217,118 L276,144 L285,129 L301,133 L308,152 L287,159 L293,185 L263,256 L170,263 L174,251 L219,240 L190,210 L136,222 L129,248 L133,266 L120,270 L115,242 L117,203 L98,192 L76,222 L63,220 L52,214 z"
+      ]
+    ],
+    "bunny_fuckers": [
+      [
+        "M37,219 L35,180 L50,159 L61,125 L87,84 L81,129 L61,163 L72,162 L100,127 L126,97 L119,139 L86,164 L116,168 L160,141 L210,137 L269,164 L278,148 L294,152 L301,171 L280,179 L286,204 L250,265 L156,272 L160,260 L205,249 L177,227 L122,231 L115,257 L119,275 L106,279 L101,250 L103,212 L84,201 L62,231 L49,229 L37,219 z",
+        "M150,137 L165,100 L181,89 L187,65 L216,18 L218,63 L194,88 L204,89 L240,61 L276,51 L248,86 L211,99 L244,131 L303,132 L336,160 L369,218 L387,208 L391,233 L384,249 L370,249 L341,269 L293,270 L218,272 L217,260 L267,258 L270,210 L217,181 L183,196 L176,212 L162,206 L173,178 L211,153 L193,149 L174,159 L158,151 L150,137 z"
+      ],
+      [
+        "M37,219 L35,180 L50,159 L55,122 L81,84 L75,130 L63,159 L72,162 L93,126 L116,93 L111,141 L86,164 L117,173 L160,141 L210,137 L269,164 L278,148 L294,152 L301,171 L280,179 L286,204 L250,265 L156,272 L160,260 L206,242 L177,232 L127,236 L115,257 L119,272 L106,279 L101,250 L97,216 L85,208 L62,231 L49,229 L37,219 z",
+        "M151,122 L163,99 L177,82 L181,47 L205,7 L211,49 L190,81 L200,83 L227,53 L267,28 L241,71 L212,94 L229,122 L297,134 L328,162 L365,211 L380,208 L387,222 L387,238 L369,237 L337,262 L289,264 L219,272 L216,258 L263,251 L265,197 L213,174 L184,190 L178,203 L166,200 L173,174 L207,146 L189,143 L170,153 L154,144 L151,122 z"
       ]
     ],
     "bunny_hop": [
@@ -320,6 +342,26 @@ window.addEventListener('load',function(){
         "M76,134 L86,118 L101,106 L128,71 L163,70 L139,89 L110,107 L119,108 L147,86 L183,92 L155,109 L127,113 L141,139 L211,126 L253,133 L267,122 L279,124 L282,145 L273,155 L259,153 L242,176 L263,202 L228,246 L214,241 L232,203 L180,195 L158,185 L144,218 L136,249 L123,250 L129,218 L131,189 L111,159 L93,163 L76,155 L76,134 z"
       ]
     ],
+    "bunny_leapfucker": [
+      [
+        "M641,120 L648,94 L656,78 L668,53 L715,37 L694,61 L667,80 L680,80 L701,62 L738,50 L719,76 L691,84 L729,106 L771,54 L819,62 L822,39 L836,39 L839,50 L839,65 L832,76 L826,119 L828,150 L852,210 L840,218 L803,155 L775,125 L740,160 L691,181 L682,209 L671,205 L676,175 L710,158 L687,127 L672,136 L654,136 L641,120 z"
+      ],
+      [
+        "M517,140 L527,126 L547,109 L562,81 L613,66 L582,92 L555,115 L562,117 L590,95 L636,86 L607,111 L575,118 L602,128 L655,112 L713,105 L730,90 L745,86 L751,95 L741,109 L726,118 L720,162 L728,188 L764,231 L760,242 L701,197 L657,186 L596,201 L558,221 L532,232 L527,224 L552,205 L576,180 L568,164 L538,165 L521,155 L517,140 z"
+      ],
+      [
+        "M429,151 L439,135 L454,123 L481,88 L516,87 L492,106 L463,124 L472,125 L500,103 L536,109 L508,126 L481,129 L495,156 L564,143 L606,149 L621,139 L632,141 L635,162 L626,171 L613,170 L595,193 L616,219 L581,262 L567,258 L585,220 L533,212 L512,202 L498,235 L489,266 L476,267 L482,235 L485,206 L465,176 L446,180 L429,172 L429,151 z"
+      ],
+      [
+        "M401,153 L413,139 L434,127 L425,99 L429,65 L443,98 L442,125 L451,125 L465,100 L499,81 L483,114 L459,130 L474,157 L539,142 L585,150 L599,139 L611,141 L614,163 L605,172 L591,171 L574,193 L589,215 L560,265 L547,262 L564,220 L512,213 L490,202 L476,235 L468,266 L452,267 L461,236 L464,207 L444,177 L417,181 L402,171 L401,153 z"
+      ],
+      [
+        "M334,160 L345,130 L358,122 L362,103 L386,65 L387,102 L368,121 L376,122 L405,100 L433,92 L411,120 L382,130 L408,155 L454,156 L481,178 L507,224 L521,216 L524,236 L519,249 L508,249 L484,264 L447,266 L387,267 L387,258 L426,255 L428,218 L387,195 L359,207 L354,220 L343,215 L351,193 L382,172 L367,170 L352,178 L340,171 L334,160 z"
+      ],
+      [
+        "M279,127 L298,109 L312,97 L303,78 L296,43 L321,76 L322,98 L330,100 L330,73 L333,43 L351,76 L336,106 L356,134 L378,157 L400,179 L425,219 L443,211 L446,231 L440,243 L426,243 L403,264 L366,266 L307,267 L307,258 L345,256 L348,219 L325,187 L308,187 L305,203 L291,200 L295,180 L332,156 L317,142 L296,147 L285,137 L279,127 z"
+      ]
+    ],
     "bunny_loopeater": [
       [
         "M34,201 L30,158 L45,137 L52,104 L77,63 L72,109 L56,141 L67,140 L91,104 L117,72 L109,116 L81,142 L111,146 L156,119 L199,105 L257,131 L267,116 L283,119 L290,138 L269,146 L274,171 L245,242 L151,250 L156,238 L200,226 L172,202 L118,209 L110,235 L114,253 L101,257 L96,228 L98,189 L80,179 L61,215 L47,203 L34,201 z"
@@ -334,6 +376,26 @@ window.addEventListener('load',function(){
       ],
       [
         "M60,118 L77,102 L96,85 L81,61 L86,17 L114,59 L108,86 L118,88 L120,60 L129,17 L144,59 L125,97 L151,134 L179,163 L207,191 L240,242 L258,232 L262,257 L254,273 L240,273 L211,300 L164,302 L88,304 L88,292 L137,289 L140,242 L111,202 L85,207 L78,223 L64,217 L75,189 L120,162 L101,144 L74,150 L60,138 L60,118 z"
+      ]
+    ],
+    "fract_tree": [
+      [
+        "M159,321 L156,156",
+        "M92,106 L156,160 L202,111",
+        "M48,120 L92,106 L84,58",
+        "M197,64 L202,111 L233,120",
+        "M39,156 L52,120 L34,111",
+        "M64,51 L84,58 L101,39",
+        "M175,50 L197,64 L215,46",
+        "M254,100 L233,120 L245,139",
+        "M43,171 L39,156 L26,156",
+        "M26,120 L34,111 L34,100",
+        "M52,58 L64,51 L64,28",
+        "M101,22 L101,39 L118,46",
+        "M159,58 L175,50 L175,28",
+        "M215,28 L215,46 L233,52",
+        "M254,80 L254,100 L271,106",
+        "M261,139 L245,139 L238,156"
       ]
     ],
     "iso_sieni": [
@@ -375,6 +437,18 @@ window.addEventListener('load',function(){
       ],
       [
         "M154,111 L140,125 L136,141 L155,135 L149,203 L158,208 L170,208 L176,201 L166,134 L182,142 L180,128 L171,117 L154,111 z"
+      ],
+      [
+        "M155,109 L136,126 L136,149 L151,143 L148,206 L158,211 L170,211 L175,204 L168,144 L182,145 L182,129 L165,122 L155,109 z"
+      ],
+      [
+        "M155,109 L136,126 L136,149 L151,143 L148,206 L158,211 L170,211 L175,204 L168,144 L168,144 L169,129 L165,122 L155,109 z"
+      ],
+      [
+        "M155,109 L136,126 L136,147 L151,141 L148,204 L158,209 L170,208 L175,201 L168,142 L168,142 L169,127 L159,131 L155,109 z"
+      ],
+      [
+        "M156,131 L140,127 L140,147 L154,141 L152,204 L162,209 L174,209 L179,202 L171,142 L171,142 L173,127 L163,131 L156,131 z"
       ]
     ],
     "puku": [
@@ -431,6 +505,14 @@ window.addEventListener('load',function(){
         "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
       ]
     ],
+    "taimi2kasvaa": [
+      [
+        "M144,240 L146,213 L139,211 L138,200 L143,188 L146,209 L147,189 L151,197 L155,206 L146,212"
+      ],
+      [
+        "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
+      ]
+    ],
     "taimi_gets_eaten": [
       [
         "M144,240 L145,157 L108,157 L75,122 L114,120 L145,153 L169,120 L216,120 L183,157 L145,156"
@@ -462,6 +544,14 @@ Bunny = (function(){
   };
   return BunnyObj;
 })(),
+/** colors **/
+  colors = {
+    plant0: [ '#fff', '#390' ],
+    tree0: [ '#390' ],
+    bunny0: [ '#fff', 'rgb(144,95,48)' ],
+    bunny1: [ '#fff', 'rgb(120,109,103)' ],
+    bunny2: [ '#fff', 'rgb(235,226,191)' ],
+  },
 /** timeline0 **/
   next = 'load',
   prevKill,
@@ -471,19 +561,21 @@ Bunny = (function(){
     var
     start = now(), end, took,
     item,
+    kill,
     endTime = false;
-
-    if( prevKill ){
-      prevKill();
-      prevKill = null;
-    }
-
     if( next ){
       item = timeline[next];
       console.log('next:',next,item);
       endTime = item.time;
       next = item.next;
-      prevKill = item.init(runTime);
+      kill = item.init(runTime);
+      if( prevKill ){
+        setTimeout( prevKill, 50 );
+        prevKill = null;
+      }
+      if( kill ){
+        prevKill = kill;
+      }
       prevItem = item;
     }
     else {
@@ -639,7 +731,7 @@ Bunny = (function(){
         var
         paths = frames.taimi,
         path0 = transSVGPath( paths[2][0], [ 480, 550 ], 1 );
-        this.plant = createSVGPath( svgDoc, path0, '#fff', 4, '#390' );
+        this.plant = createSVGPath( svgDoc, path0, '#fff', 4, colors.plant0[1] );
         return function(){
         };
       }
@@ -647,7 +739,7 @@ Bunny = (function(){
 /** pupuentry **/
     // shows the bunny
     pupuentry: {
-      time: 2200,
+      time: 3000,
       next: 'pupueat',
       init: function(t){
         var
@@ -662,16 +754,16 @@ Bunny = (function(){
         } ),
         elems = [
           group,
-          createSVGPath( group, path0, '#fff', 4, '#fc0' )
+          createSVGPath( group, path0, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
-          createSVGAnim( elems[1], t, 1100, 2, 'd', [
+          createSVGAnim( elems[1], t, 1100, 3, 'd', [
             path0,
             path1,
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 2200, 0, '1280,330', '700,330' )
+          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '700,330' )
         ],
         i;
         return function(){
@@ -689,15 +781,15 @@ Bunny = (function(){
         var
         paths = frames.bunny_hoptoass,
         elem, anim, i,
-        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
-        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
-        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.5 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
           transform: 'translate(700,330)'
         } ),
         elems = [
           group,
-          createSVGPath( group, path2, '#fff', 4, '#fc0' )
+          createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 1100, 0, 'd', [
@@ -719,21 +811,22 @@ Bunny = (function(){
       time: 1100,
       next: 'pupueat3',
       init: function(t){
+        removeElem( timeline.plant3.plant );
+        timeline.pupurun.init(t,true);
         var
-        paths = frames.bunny_eats,
-        elem, anim, i,
-        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
-        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
-        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.6 ),
-        path3 = transSVGPath( paths[3][0], [ -100, -30 ], 1.6 ),
-        path4 = transSVGPath( paths[4][0], [ -100, -30 ], 1.6 ),
-        path5 = transSVGPath( paths[5][0], [ -100, -30 ], 1.6 ),
+        paths = frames.bunny_eats, elem, anim, i,
+        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.33 ),
+        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.33 ),
+        path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.33 ),
+        path3 = transSVGPath( paths[3][0], [ -100, -30 ], 1.33 ),
+        path4 = transSVGPath( paths[4][0], [ -100, -30 ], 1.33 ),
+        path5 = transSVGPath( paths[5][0], [ -100, -30 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
           transform: 'translate(700,330)'
         } ),
         elems = [
           group,
-          createSVGPath( group, path5, '#fff', 4, '#fc0' )
+          createSVGPath( group, path5, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 1100, 0, 'd', [
@@ -756,19 +849,19 @@ Bunny = (function(){
     // pupu sits to eat
     pupueat3: {
       time: 1800,
-      next: 'end',
+      next: 'fractal',
       init: function(t){
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,
-        path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.6 ),
-        path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.6 ),
+        path0 = transSVGPath( paths[0][0], [ -75, -10 ], 1.4 ),
+        path1 = transSVGPath( paths[1][0], [ -75, -10 ], 1.4 ),
         group = createSVGGroup( svgDoc, {
           transform: 'translate(700,330)'
         } ),
         elems = [
           group,
-          createSVGPath( group, path1, '#fff', 4, '#fc0' )
+          createSVGPath( group, path1, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 200, 'indefinite', 'd', [
@@ -781,6 +874,84 @@ Bunny = (function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
         };
+      }
+    },
+/** fractal **/
+    fractal: {
+      time: 1000,
+      next: 'pupurun',
+      init: function(t){
+        var
+        paths = [],
+        elems = [],
+        i, path;
+        tree = frames.fract_tree[0];
+        for( i in tree ){
+          elems.push( createSVGPath( svgDoc,
+            transSVGPath( tree[i], [ 274, 0 ], 2.2 ),
+          colors.tree0[0], 4 ) );
+        }
+        return function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+        };
+      }
+    },
+/** pupurun **/
+    // pupu sits to eat
+    pupurun: {
+      time: 4000,
+      next: 'end',
+      init: function(t,selfKill){
+        var i, elems = [], anims = [],
+        paths = frames.bunny_leap,
+        lpath0 = scaleSVGPath( horizFlipSVGPath( paths[0][0] ), 0.6 ),
+        lpath1 = scaleSVGPath( horizFlipSVGPath( paths[1][0] ), 0.6 ),
+        lpath2 = scaleSVGPath( horizFlipSVGPath( paths[2][0] ), 0.6 ),
+        lpath3 = scaleSVGPath( horizFlipSVGPath( paths[3][0] ), 0.6 ),
+        rpath0 = scaleSVGPath( paths[0][0], 0.75 ),
+        rpath1 = scaleSVGPath( paths[1][0], 0.75 ),
+        rpath2 = scaleSVGPath( paths[2][0], 0.75 ),
+        rpath3 = scaleSVGPath( paths[3][0], 0.75 ),
+        group = createSVGGroup( svgDoc, {
+          transform: 'translate(-330,100)'
+        } ),
+        group2 = createSVGGroup( svgDoc, {
+          transform: 'translate(1330,150)'
+        } ),
+        bunny0 = createSVGPath( group, lpath0, colors.bunny0[0], 4, colors.bunny0[1] ),
+        bunny1 = createSVGPath( group2, rpath0, colors.bunny0[0], 4, colors.bunny0[1] ),
+        foo;
+        elems.push( bunny0 );
+        elems.push( bunny1 );
+        elems.push( group );
+        anims.push(
+          createSVGAnim( bunny0, t, 1100, 'indefinite', 'd', [
+            lpath0,
+            lpath1,
+            lpath2,
+            lpath3
+          ].join(';')+';' )
+        );
+        anims.push(
+          createSVGAnim( bunny1, t, 1100, 'indefinite', 'd', [
+            rpath0,
+            rpath1,
+            rpath2,
+            rpath3
+          ].join(';')+';' )
+        );
+        anims.push( createSVGMoveAnim( group, t, 2200, 0, '-330,100', '1500,100' ) );
+        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '1330,150', '-330,150' ) );
+        var kill = function(){
+          for( i in elems ){ removeElem( elems[i] ); }
+          for( i in anims ){ removeElem( anims[i] ); }
+        };
+        if( selfKill ){
+          setTimeout( kill, 4000 );
+        }
+        else {
+          return kill;
+        }
       }
     },
 /** end **/

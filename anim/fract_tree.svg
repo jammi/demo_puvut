@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="320" height="320" viewBox="0, 0, 320, 320">
+  <g id="Layer 1">
+    <path d="M158.5,320.5 L155.5,155.5" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M92.406,105.789 L155.5,159.754 L201.98,111.418" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M47.512,119.859 L92.406,105.789 L84.227,58.398" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M197.242,64.262 L201.98,111.418 L232.941,119.859" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M38.676,155.5 L51.926,119.859 L33.812,111.242" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M64.266,50.512 L84.227,58.398 L101.145,39.219" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M175.031,49.844 L197.242,64.262 L214.938,46.203" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M254.316,100.004 L232.941,119.859 L244.844,139.438" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M42.812,171.496 L38.676,155.5 L25.91,155.5" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M25.91,119.859 L33.812,111.242 L33.812,100.004" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M51.926,58.398 L64.266,50.512 L64.266,28.422" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M101.145,22.434 L101.145,39.219 L118.141,46.203" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M158.5,58.398 L175.031,49.844 L175.031,28.422" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M214.938,28.422 L214.938,46.203 L232.941,51.898" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M254.316,79.891 L254.316,100.004 L271.309,105.789" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+    <path d="M260.766,139.438 L244.844,139.438 L237.82,155.5" fill-opacity="0" stroke="#00FF00" stroke-width="1"/>
+  </g>
+  <defs/>
+</svg>

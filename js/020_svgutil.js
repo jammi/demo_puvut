@@ -22,17 +22,13 @@
     });
   },
   svgPathMatch = {
-    instr: /([a-zA-Z])([0-9]+?),([0-9]+?)/,
-    coord: /([0-9]+?),([0-9]+?)/
+    instr: /([a-zA-Z])([\-0-9]+?),([0-9]+?)/,
+    coord: /([0-9]+?),([\-0-9]+?)/
   },
-  transSVGPath = function( path, offset, scale ){
-    if(!offset){ offset = [0,0]; }
-    if(!scale){  scale  = 1.0; }
+  _processSVGCoords = function( path, fn ){
     var
     scalePath = [],
     splitPath = path.split(' '),
-    offsetX = offset[0],
-    offsetY = offset[1],
     chr, instr, coords, i, x, y;
     for( i in splitPath ){
       instr = splitPath[i];
@@ -42,21 +38,37 @@
       else if( svgPathMatch.instr.test( instr ) ){
         chr = instr[0];
         coords = instr.slice(1).split(',');
-        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
-        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
-        scalePath.push( chr+x.toString()+','+y.toString() );
+        scalePath.push( chr+fn(parseInt(coords[0],10),parseInt(coords[1]),10) );
       }
       else if( svgPathMatch.coord.test( instr ) ){
         coords = instr.split(',');
-        x = Math.round( parseInt(coords[0])*scale ) + offsetX;
-        y = Math.round( parseInt(coords[1])*scale ) + offsetY;
-        scalePath.push( x.toString()+','+y.toString() );
+        scalePath.push( fn(parseInt(coords[0],10),parseInt(coords[1],10)) );
       }
       else{
         console.warn('undefined instr:',instr);
       }
     }
     return scalePath.join(' ');
+  },
+  transSVGPath = function( path, offset, scale ){
+    if(!offset){ offset = [0,0]; }
+    if(!scale){  scale  = 1.0; }
+    var
+    offsetX = offset[0],
+    offsetY = offset[1];
+    return _processSVGCoords( path, function(x,y){
+      x = Math.round( parseInt(x)*scale ) + offsetX;
+      y = Math.round( parseInt(y)*scale ) + offsetY;
+      return x.toString()+','+y.toString();
+    });
+  },
+  horizFlipSVGPath = function(path,w){
+    if(!w){ w=320; }
+    var _out = _processSVGCoords( path, function(x,y){
+      x = w-x;
+      return x.toString()+','+y.toString();
+    } );
+    return _out;
   },
   scaleSVGPath = function( path, scale ){
     return transSVGPath( path, null, scale );

@@ -1,6 +1,6 @@
     // shows the bunny
     pupuentry: {
-      time: 2200,
+      time: 3000,
       next: 'pupueat',
       init: function(t){
         var
@@ -15,16 +15,16 @@
         } ),
         elems = [
           group,
-          createSVGPath( group, path0, '#fff', 4, '#fc0' )
+          createSVGPath( group, path0, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
-          createSVGAnim( elems[1], t, 1100, 2, 'd', [
+          createSVGAnim( elems[1], t, 1100, 3, 'd', [
             path0,
             path1,
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 2200, 0, '1280,330', '700,330' )
+          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '700,330' )
         ],
         i;
         return function(){

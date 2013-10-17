@@ -6,19 +6,21 @@
     var
     start = now(), end, took,
     item,
+    kill,
     endTime = false;
-
-    if( prevKill ){
-      prevKill();
-      prevKill = null;
-    }
-
     if( next ){
       item = timeline[next];
       console.log('next:',next,item);
       endTime = item.time;
       next = item.next;
-      prevKill = item.init(runTime);
+      kill = item.init(runTime);
+      if( prevKill ){
+        setTimeout( prevKill, 50 );
+        prevKill = null;
+      }
+      if( kill ){
+        prevKill = kill;
+      }
       prevItem = item;
     }
     else {
