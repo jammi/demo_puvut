@@ -1,6 +1,6 @@
     // pupu sits to eat
     pupueat: {
-      time: 1200,
+      time: 1600,
       next: 'pupueat2',
       init: function(t){
         var
@@ -10,14 +10,14 @@
         path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
         path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(700,330)'
+          transform: 'translate(670,320)'
         } ),
         elems = [
           group,
           createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
-          createSVGAnim( elems[1], t, 1100, 0, 'd', [
+          createSVGAnim( elems[1], t, 1600, 0, 'd', [
             path0,
             path1,
             path2

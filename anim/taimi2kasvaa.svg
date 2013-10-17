@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="320" height="320" viewBox="0, 0, 320, 320">
-  <g id="Layer 1">
-    <path d="M143.855,239.507 L144.905,156.744 L108.141,157.432 L74.795,121.705 L113.926,119.663 L144.889,153.349 L169.022,120.433 L216.095,119.707 L182.951,156.714 L145.44,156.345" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
-  </g>
   <g id="Layer 2">
-    <path d="M143.855,239.507 L145.905,212.744 L139,211 L138,200 L143,188 L145.889,209.349 L147,189 L151,197 L155,206 L146.44,212.345" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+    <path d="M143,239 L144,156 L108,157 L74,121 L113,119 L144,153 L169,120 L216,119 L182,156 L145,156" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+  </g>
+  <g id="Layer 1">
+    <path d="M143,239 L145,212 L139,211 L138,200 L143,188 L145,209 L147,189 L151,197 L155,206 L146,212" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
   </g>
   <g id="Layer 0 ">
-    <path d="M143.855,239.507 L145,230 L145,233 L143,236 L143,232 L144,231 L147,233 L146,237 L149,231 L145,233" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
+    <path d="M143,239 L145,230 L145,233 L143,236 L143,232 L144,231 L147,233 L146,237 L149,231 L145,233" fill-opacity="0" stroke="#0000FF" stroke-width="1"/>
   </g>
   <defs/>
 </svg>

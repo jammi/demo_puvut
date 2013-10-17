@@ -1,15 +1,15 @@
     // pupu sits to eat
     pupueat3: {
       time: 1800,
-      next: 'fractal',
+      next: 'pupueat4',
       init: function(t){
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,
-        path0 = transSVGPath( paths[0][0], [ -75, -10 ], 1.4 ),
-        path1 = transSVGPath( paths[1][0], [ -75, -10 ], 1.4 ),
+        path0 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
+        path1 = transSVGPath( paths[1][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(700,330)'
+          transform: 'translate(695,345)'
         } ),
         elems = [
           group,

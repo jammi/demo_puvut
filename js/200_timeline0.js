@@ -2,6 +2,26 @@
   prevKill,
   prevItem,
   runTime = 0,
+  timerStarted,
+  timerElem,
+  createTimer = function(){
+    timerStarted = new Date().getTime();
+    timerElem = createElem(b,'div');
+    setStyles( timerElem, {
+      zIndex: 10000,
+      fontSize: '20px',
+      color: '#fff',
+      position: 'absolute',
+      right: 0, bottom: 0,
+      height: '20px',
+      fontFamily: 'sans-serif'
+    });
+    var updateTimer = function(){
+      var timeNow = new Date().getTime();
+      timerElem.innerText = timeNow-timerStarted;
+    };
+    setInterval( updateTimer, 50 );
+  },
   nextStep = function(){
     var
     start = now(), end, took,

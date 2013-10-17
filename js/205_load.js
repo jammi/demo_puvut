@@ -2,6 +2,7 @@
       // does the suit and tie thing
       init: function(t){
         var
+        _this = this,
         paths = frames.puku[0],
         elems = [],
         anims = [],
@@ -34,6 +35,12 @@
         ruAnims.push( createSVGRotAnim( rusetti, t+5500, 1000, 0, 60, -90 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+6500, 500, 0, -90, 90 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+7000, 3000, 'indefinite', 90, 1170 ) );
+        setTimeout( function(){
+          _this.music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
+        }, 10 );
+        setTimeout( function(){
+          _this.music.play();
+        }, 1400 );
         return function(){
           for( i in anims ){ removeElem( anims[i] ); }
           for( i in elems ){ removeElem( elems[i] ); }

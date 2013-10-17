@@ -4,11 +4,11 @@
       next: 'plant3',
       init: function(t){
         var
-        paths = frames.taimi,
+        paths = frames.taimi2kasvaa,
         elem, anim,
-        path0 = transSVGPath( paths[0][0], [ 480, 550 ], 1 ),
-        path1 = transSVGPath( paths[1][0], [ 480, 550 ], 1 ),
-        path2 = transSVGPath( paths[2][0], [ 480, 550 ], 1 ),
+        path0 = transSVGPath( paths[0][0], [ 480, 450 ], 1 ),
+        path1 = transSVGPath( paths[1][0], [ 480, 450 ], 1 ),
+        path2 = transSVGPath( paths[2][0], [ 480, 450 ], 1 ),
         elems = [],
         anims = [],
         i;
