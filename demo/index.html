@@ -582,11 +582,26 @@ Bunny = (function(){
     };
     devel && setInterval( updateTimer, 50 );
   },
-  timelineElem = (function(){
+  endTimeElem = (function(){
     if(!devel){return null;}
     var elem = createElem(b,'div');
     setStyles( elem, {
       zIndex: 10001,
+      fontSize: '20px',
+      lineHeight: '20px',
+      height: '20px',
+      color: '#fff',
+      position: 'absolute',
+      right: 0, bottom: '20px',
+      fontFamily: 'sans-serif'
+    } );
+    return elem;
+  })(),
+  timelineElem = (function(){
+    if(!devel){return null;}
+    var elem = createElem(b,'div');
+    setStyles( elem, {
+      zIndex: 10002,
       fontSize: '20px',
       lineHeight: '20px',
       height: '40px',
@@ -597,15 +612,19 @@ Bunny = (function(){
     } );
     return elem;
   })(),
+  itemStart = 0,
+  itemTime = 0,
+  endTime = 0,
   nextStep = function(){
     var
     start = now(), end, took,
     item,
-    kill,
-    endTime = false;
+    kill;
+    itemStart = start;
     if( next ){
       item = timeline[next];
       endTime = item.time;
+      itemTime = endTime;
       timelineText = 'item: '+next
       next = item.next;
       timelineText += '<br>next: '+next;
@@ -630,9 +649,13 @@ Bunny = (function(){
 
     end = now(); took = end-start;
     endTime -= took - 10;
-
     if( endTime < 10 ){ endTime = 10; }
     runTime += endTime;
+    devel && (
+      endTimeElem.innerHTML = (
+        ' start: ' + (itemStart-timerStarted) +
+        ' dur: ' + itemTime +
+        ' end: '+runTime)+'ms' );
     setTimeout( nextStep, endTime );
   };
   timeline = {
@@ -703,7 +726,7 @@ Bunny = (function(){
           removeElem( rusetti );
         };
       },
-      time: 15000,
+      time: 20000,
       next: 'plant'
     },
 /** plant **/
