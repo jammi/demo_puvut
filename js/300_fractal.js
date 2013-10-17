@@ -2,7 +2,8 @@
       time: 10000,
       next: 'fractal',
       defaultTreeOpts: {
-        animDraw: false,
+        animDraw: true,
+        animSpeed: 300, // ms
         maxDepth: 10,
         startX: 0,
         startY: 680,
@@ -24,6 +25,8 @@
           treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(680,0)'});
         }
         var
+        animMs = 0,
+        animSpeed = treeOpts.animSpeed,
         animDraw = treeOpts.animDraw,
         maxDepth = treeOpts.maxDepth,
         startX = treeOpts.startX,
@@ -33,11 +36,18 @@
         isRandom = treeOpts.isRandom,
         paths = [],
         elems = [],
+        _anims = [],
         depth = 0,
         degToRad = Math.PI / 180.0,
         group = treeOpts.group,
-        drawFract = function(x,y,x2,y2){
-          var path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width;
+        drawFract = function(_animProps){
+          var
+          x = _animProps[0],
+          y = _animProps[1],
+          x2 = _animProps[2],
+          y2 = _animProps[3],
+          depth = _animProps[4],
+          path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width;
           color = (depth<4)?'#531':((depth<7)?'#452':((depth<10)?'#471':'#392'));
           // width = Math.round(17-depth*(depth*0.5)*0.4);
           // (width < 3) && (width = 3);
@@ -61,7 +71,15 @@
             var
             x2 = x + Math.round(Math.cos(deg * degToRad) * len);
             y2 = y + Math.round(Math.sin(deg * degToRad) * len);
-            elems.push( drawFract(x,y,x2,y2) );
+            if( animDraw ){
+              _anims.push( [x,y,x2,y2,depth] );
+              setTimeout( function(){
+                elems.push( drawFract(_anims.shift()) );
+              }, animMs );
+            }
+            else {
+              elems.push( drawFract([x,y,x2,y2,depth]) );
+            }
             len2 = len*0.8,
             rand = function(deg){
               if(!isRandom){ return deg; }
@@ -78,6 +96,7 @@
             }
           }
           depth++;
+          animMs += animSpeed;
           genFract(nextNodes);
         },
         initCoords = [[startX,startY,startLen,startDeg]];
