@@ -1,4 +1,4 @@
-  next = 'load',
+  next = 'fractal',
   prevKill,
   prevItem,
   runTime = 0,
