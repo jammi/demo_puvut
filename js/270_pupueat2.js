@@ -22,22 +22,23 @@
         ],
         anims = [
           createSVGAnim( elems[1], t, 1100, 0, 'd', [
-            path0,
+            // path0,
             path1,
-            path2,
+            // path2,
             path3,
             path4,
             path5
           ].join(';')+';' )
         ],
         i,
-        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 280, 450 ], 1 ),
-        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 280, 450 ], 1 ),
-        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 280, 450 ], 1 ),
-        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 280, 450 ], 1 ),
-        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 280, 450 ], 1 );
+        eatplant = frames.taimi_gets_eaten,
+        plantpath0 = transSVGPath( eatplant[0][0], [ 270, 460 ], 1 ),
+        plantpath1 = transSVGPath( eatplant[1][0], [ 270, 460 ], 1 ),
+        plantpath2 = transSVGPath( eatplant[2][0], [ 270, 460 ], 1 ),
+        plantpath3 = transSVGPath( eatplant[3][0], [ 270, 460 ], 1 ),
+        plantpath4 = transSVGPath( eatplant[4][0], [ 270, 460 ], 1 );
         this.plant = createSVGPath( svgDoc, plantpath0, '#fff', 4, colors.plant0[1] );
-        this.plantanim = createSVGAnim( this.plant, t, 1100, 0, 'd', [
+        this.plantanim = createSVGAnim( this.plant, t+500, 1100, 0, 'd', [
             plantpath0,
             plantpath1,
             plantpath2,

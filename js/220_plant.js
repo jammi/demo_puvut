@@ -9,7 +9,7 @@
         path3 = transSVGPath( paths[3][0], [ 410, 410 ], 1.5 ),
         path4 = transSVGPath( paths[3][0], [ 410, 480 ], 1.5 ),
         elem = createSVGPath( svgDoc, path0, '#fff', 4, '#c30' ),
-        anim = createSVGAnim( elem, t+100, 1000, 0, 'd', [
+        anim = createSVGAnim( elem, t+100, 1100, 0, 'd', [
             path0,
             path1,
             path2,

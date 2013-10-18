@@ -1,6 +1,3 @@
-  next = 'wait',
-  // skipTo = false,
-  skipTo = 'plant',
   firstNext = next,
   prevKill,
   prevItem,

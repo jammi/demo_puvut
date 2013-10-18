@@ -1,8 +1,9 @@
     // pupu sits to eat
     pupueat3: {
       time: 1800,
-      next: 'pupueat4',
+      next: 'pupueat5',
       init: function(t){
+        setTimeout( timeline.pupurun.init(t,true,120), 1500 );
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,

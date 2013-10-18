@@ -6,9 +6,12 @@
         i,
         rusetti = _init.rusetti,
         ruPath  = _init.ruPath,
-        ruAnims = _init.ruAnims;
+        ruAnims = _init.ruAnims,
+        elems = [];
+
         return function(){
           for( i in ruAnims ){ removeElem( ruAnims[i] ); }
+          for( i in elems ){ removeElem( elems[i] ); }
           removeElem( rusetti );
         };
       },

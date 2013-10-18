@@ -1,8 +1,8 @@
     pupueat4: {
       time: 1100,
       next: 'pupueat5',
+      // next: 'plant3',
       init: function(t){
-        setTimeout( timeline.pupurun2.init(t,true), 500 );
         var
         paths = frames.bunny_eats, elem, anim, i,
         path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
@@ -50,13 +50,13 @@
         } ),
         elems = [
           group,
-          createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
+          createSVGPath( group, path1, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 1200, 0, 'd', [
             path0,
             path1,
-            path2
+            // path2
           ].join(';')+';' )
         ],
         i;

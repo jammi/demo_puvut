@@ -1,6 +1,12 @@
 (function(){
 window.addEventListener('load',function(){
   var
+  next = 'wait',
+  skipTo = false,
+  // skipTo = 'plant',
+  // skipTo = 'plant3',
+  // skipTo = 'fractal',
+  origSkip = skipTo,
   w = window,
   isInFullScreen = false,
   _resizer = w.addEventListener('resize',function(){

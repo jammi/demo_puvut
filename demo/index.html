@@ -8,6 +8,12 @@ body {background:#000;}
 (function(){
 window.addEventListener('load',function(){
   var
+  next = 'wait',
+  skipTo = false,
+  // skipTo = 'plant',
+  // skipTo = 'plant3',
+  // skipTo = 'fractal',
+  origSkip = skipTo,
   w = window,
   isInFullScreen = false,
   _resizer = w.addEventListener('resize',function(){
@@ -598,9 +604,6 @@ Bunny = (function(){
     bunny2: [ '#fff', 'rgb(235,226,191)' ],
   },
 /** timeline0 **/
-  next = 'wait',
-  // skipTo = false,
-  skipTo = 'plant',
   firstNext = next,
   prevKill,
   prevItem,
@@ -831,9 +834,12 @@ Bunny = (function(){
         i,
         rusetti = _init.rusetti,
         ruPath  = _init.ruPath,
-        ruAnims = _init.ruAnims;
+        ruAnims = _init.ruAnims,
+        elems = [];
+
         return function(){
           for( i in ruAnims ){ removeElem( ruAnims[i] ); }
+          for( i in elems ){ removeElem( elems[i] ); }
           removeElem( rusetti );
         };
       },
@@ -852,7 +858,7 @@ Bunny = (function(){
         path3 = transSVGPath( paths[3][0], [ 410, 410 ], 1.5 ),
         path4 = transSVGPath( paths[3][0], [ 410, 480 ], 1.5 ),
         elem = createSVGPath( svgDoc, path0, '#fff', 4, '#c30' ),
-        anim = createSVGAnim( elem, t+100, 1000, 0, 'd', [
+        anim = createSVGAnim( elem, t+100, 1100, 0, 'd', [
             path0,
             path1,
             path2,
@@ -885,17 +891,18 @@ Bunny = (function(){
       init: function(t){
         var
         paths = frames.taimi2kasvaa,
+        apaths = frames.taimi,
         elem, anim,
-        path0 = transSVGPath( paths[0][0], [ 480, 450 ], 1 ),
-        path1 = transSVGPath( paths[1][0], [ 480, 450 ], 1 ),
-        path2 = transSVGPath( paths[2][0], [ 480, 450 ], 1 ),
-        bpath0 = transSVGPath( paths[0][0], [ 280, 450 ], 1 ),
-        bpath1 = transSVGPath( paths[1][0], [ 280, 450 ], 1 ),
-        bpath2 = transSVGPath( paths[2][0], [ 280, 450 ], 1 ),
+        path0 = transSVGPath( apaths[0][0], [ 480, 450 ], 1.3 ),
+        path1 = transSVGPath( apaths[1][0], [ 480, 450 ], 1.3 ),
+        path2 = transSVGPath( apaths[2][0], [ 480, 450 ], 1.3 ),
+        bpath0 = transSVGPath( paths[0][0], [ 270, 460 ], 1 ),
+        bpath1 = transSVGPath( paths[1][0], [ 270, 460 ], 1 ),
+        bpath2 = transSVGPath( paths[2][0], [ 270, 460 ], 1 ),
         elems = [],
         anims = [],
         i;
-        elems.push( createSVGPath( svgDoc, path2, '#fff', 4, '#390' ) );
+        elems.push( createSVGPath( svgDoc, path0, '#fff', 4, '#361' ) );
         anims.push( createSVGAnim( elems[0], t, 4200, 0, 'd', [
             path0,
             path1,
@@ -923,10 +930,11 @@ Bunny = (function(){
       init: function(t){
         var
         paths = frames.taimi2kasvaa,
-        path0 = transSVGPath( paths[2][0], [ 480, 450 ], 1 );
-        bpath0 = transSVGPath( paths[2][0], [ 280, 450 ], 1 );
+        apaths = frames.taimi,
+        path0 = transSVGPath( apaths[2][0], [ 480, 450 ], 1.3 );
+        bpath0 = transSVGPath( paths[2][0], [ 270, 460 ], 1 );
         this.bplant = createSVGPath( svgDoc, bpath0, '#fff', 4, colors.plant0[1] );
-        this.plant = createSVGPath( svgDoc, path0, '#fff', 4, colors.plant0[1] );
+        this.plant = createSVGPath( svgDoc, path0, '#fff', 4, '#361' );
         return function(){
         };
       }
@@ -970,12 +978,17 @@ Bunny = (function(){
 /** pupueat **/
     // pupu sits to eat
     pupueat: {
-      time: 1600,
+      time: 800,
       next: 'pupueat2',
       init: function(t){
         var
         paths = frames.bunny_hoptoass,
         elem, anim, i,
+        bpaths = frames.bunny_eats,
+        bpath0 = transSVGPath( bpaths[0][0], [ -120, -20 ], 1.33 ),
+        bpath1 = transSVGPath( bpaths[1][0], [ -120, -20 ], 1.33 ),
+        bpath2 = transSVGPath( bpaths[2][0], [ -120, -20 ], 1.33 ),
+
         path0 = transSVGPath( paths[0][0], [ -100, -30 ], 1.5 ),
         path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
         path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
@@ -984,13 +997,16 @@ Bunny = (function(){
         } ),
         elems = [
           group,
-          createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
+          createSVGPath( group, path1, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
-          createSVGAnim( elems[1], t, 1600, 0, 'd', [
+          createSVGAnim( elems[1], t, 800, 0, 'd', [
             path0,
             path1,
-            path2
+            path2,
+            bpath0,
+            bpath1,
+            bpath2
           ].join(';')+';' )
         ],
         i;
@@ -1025,22 +1041,23 @@ Bunny = (function(){
         ],
         anims = [
           createSVGAnim( elems[1], t, 1100, 0, 'd', [
-            path0,
+            // path0,
             path1,
-            path2,
+            // path2,
             path3,
             path4,
             path5
           ].join(';')+';' )
         ],
         i,
-        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 280, 450 ], 1 ),
-        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 280, 450 ], 1 ),
-        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 280, 450 ], 1 ),
-        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 280, 450 ], 1 ),
-        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 280, 450 ], 1 );
+        eatplant = frames.taimi_gets_eaten,
+        plantpath0 = transSVGPath( eatplant[0][0], [ 270, 460 ], 1 ),
+        plantpath1 = transSVGPath( eatplant[1][0], [ 270, 460 ], 1 ),
+        plantpath2 = transSVGPath( eatplant[2][0], [ 270, 460 ], 1 ),
+        plantpath3 = transSVGPath( eatplant[3][0], [ 270, 460 ], 1 ),
+        plantpath4 = transSVGPath( eatplant[4][0], [ 270, 460 ], 1 );
         this.plant = createSVGPath( svgDoc, plantpath0, '#fff', 4, colors.plant0[1] );
-        this.plantanim = createSVGAnim( this.plant, t, 1100, 0, 'd', [
+        this.plantanim = createSVGAnim( this.plant, t+500, 1100, 0, 'd', [
             plantpath0,
             plantpath1,
             plantpath2,
@@ -1064,8 +1081,9 @@ Bunny = (function(){
     // pupu sits to eat
     pupueat3: {
       time: 1800,
-      next: 'pupueat4',
+      next: 'pupueat5',
       init: function(t){
+        setTimeout( timeline.pupurun.init(t,true,120), 1500 );
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,
@@ -1095,8 +1113,8 @@ Bunny = (function(){
     pupueat4: {
       time: 1100,
       next: 'pupueat5',
+      // next: 'plant3',
       init: function(t){
-        setTimeout( timeline.pupurun2.init(t,true), 500 );
         var
         paths = frames.bunny_eats, elem, anim, i,
         path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
@@ -1144,13 +1162,13 @@ Bunny = (function(){
         } ),
         elems = [
           group,
-          createSVGPath( group, path2, colors.bunny0[0], 4, colors.bunny0[1] )
+          createSVGPath( group, path1, colors.bunny0[0], 4, colors.bunny0[1] )
         ],
         anims = [
           createSVGAnim( elems[1], t, 1200, 0, 'd', [
             path0,
             path1,
-            path2
+            // path2
           ].join(';')+';' )
         ],
         i;
@@ -1203,7 +1221,7 @@ Bunny = (function(){
       next: 'forest',
       defaultTreeOpts: {
         animDraw: true,
-        animSpeed: 100, // ms
+        animSpeed: 80, // ms
         maxDepth: 11,
         colors: [
           '#531','#531','#531','#531',
@@ -1264,7 +1282,7 @@ Bunny = (function(){
           }
         }
         if(!treeOpts.group){
-          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(640,680)'});
+          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(670,680)'});
         }
         var
         animMs = 0,
@@ -1375,17 +1393,98 @@ Bunny = (function(){
           transform:
             'translate(0,0)'
         });
+        timeline.forest.svg3 = createSVGGroup(timeline.forest.svg2,{
+          transform:
+            'translate(5800,0)'
+        });
       }, 0 );
     })(),
     trees: {
       groups: [],
       positions: []
     },
+    staticThings: function(t,elems){
+      var
+      parent = this.svg3,
+      taikasieni = frames.pikkusieni_lives,
+      i, path,
+      taika = createSVGGroup( parent, {
+        transform: 'translate(700,480)'
+      } );
+      taikasieniPaths = [];
+      for( i in taikasieni ){
+        path = taikasieni[i][0];
+        taikasieniPaths.push(horizFlipSVGPath(path));
+      }
+      this.taikaPaths = taikasieniPaths;
+      this.taikaGroup = taika;
+      this.taika = createSVGPath( taika, taikasieniPaths[0], '#00f', 4, '#66f' );
+      this.taikaAnim = createSVGAnim( this.taika, t, 500, 'indefinite', 'stroke', [
+        '#0f0',
+        '#f00',
+        '#00f'
+      ].join(';')+';' );
+      this.taikaAnim2 = createSVGAnim( this.taika, t, 600, 'indefinite', 'fill', [
+        '#00f',
+        '#0f0',
+        '#f00'
+      ].join(';')+';' );
+    },
     bunnyThings: function(t){
-      console.log('bunnyThings:',this.svg2);
+      var
+      elems = [],
+      parent = this.svg2,
+      kiviPos = [ 0, 0 ],
+      kiviScale = 0.5,
+      colors = [
+        [[ '#ccc', '#999' ]], // kivi1
+        [[ '#bbb', '#888' ]], // kivi2
+        [[ '#999', '#aaa' ]], // kivi3
+        [[ '#999', '#9c3' ],[ '#888', '#c93' ],[ '#f66', '#fff' ]], // pikkusieni
+        [[ '#fc0', '#960' ]], // kanttis
+        [[ '#fc0', '#960' ]], // rev_kanttis
+        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi
+        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi2
+        [[ '#fff', '#999' ]], // bunny_ihme
+        [[ '#fff', '#999' ]], // bunny_hoptoass
+        [[ '#fff', '#999' ]], // rev_bunny_ihme
+        [[ '#fff', '#999' ]], // rev_bunny_hoptoass
+      ],
+      kivet = [
+        frames.kivi1[0][0], frames.kivi2[0][0], frames.kivi3[0][0],
+        frames.pikkusieni[0][0],
+        frames.kanttis[0][0],
+        horizFlipSVGPath( frames.kanttis[0][0] ),
+        transSVGPath( frames.taimi[2][0], kiviPos, kiviScale ),
+        transSVGPath( frames.taimi2[0][0], kiviPos, kiviScale ),
+        transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 ),
+        transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 ),
+        horizFlipSVGPath( transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 )),
+        horizFlipSVGPath( transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 )),
+      ],i,j,grp,x=1300,y,kivi,color,
+      kiviLen = kivet.length;
+      for( ; x<4800; ){
+        j = Math.floor(Math.random()*8);
+        if( j == 7 ){
+          j += Math.floor(Math.random()*4);
+        }
+        x += Math.floor(Math.random()*180)+80; // "kivien" tiheys
+        y = 480+Math.floor(Math.random()*30)-15;
+        grp = createSVGGroup(parent,{transform:
+          'translate('+x+','+y+')'
+        });
+        color = colors[j];
+        color = color[Math.floor(Math.random()*color.length)];
+        kivi = transSVGPath( kivet[j], kiviPos, Math.random()*1.2 );
+        elems.push( createSVGPath( grp, kivi, color[0], 2, color[1] ) );
+      }
+      this.staticThings( t, elems );
+      return elems;
     },
     init: function(t){
       var
+      // scrollTime = (origSkip=='fractal')?5000:30000,
+      scrollTime = 30000,
       _this = this,
       trees = this.trees,
       positions = trees.positions,
@@ -1396,8 +1495,8 @@ Bunny = (function(){
       posDiffX = positions[posLen-1][0]-positions[0][0],
       anims = [],
       forestMoves = [],
+      elems = this.bunnyThings(t),
       fractalGroup = this.treeGroup;
-      setTimeout(function(){_this.bunnyThings(t)},10);
       anims.push(
         createSVGMoveAnim( fractalGroup, t, 12000, 0, '640,680', '-1280,680' )
       );
@@ -1406,8 +1505,20 @@ Bunny = (function(){
         transform: 'translate(-7000,0)'
       });
       anims.push(
-        createSVGMoveAnim( this.svg, t, 30000, 0, '0,0', '-7000,0' )
+        createSVGMoveAnim( this.svg, t, scrollTime, 0, '0,0', '-7000,0' )
       );
+      setSVGAttrs( this.svg2, {
+        transform: 'translate(-6000,0)'
+      });
+      anims.push(
+        createSVGMoveAnim( this.svg2, t, scrollTime, 0, '0,0', '-6000,0' )
+      );
+      setTimeout( function(){
+        timeline.pupurun.init(
+          Math.round(svgDoc.getCurrentTime()*1000),
+          true, 460
+        )
+      }, 25000 );
       for(i=0;i<76;i++){
         to += 300;
         posI = i%posLen;
@@ -1437,7 +1548,14 @@ Bunny = (function(){
     next: 'end',
     time: 150000,
     init: function(t){
-      console.log('pupumush');
+      var
+      _this = timeline.forest;
+      setSVGAttrs( _this.taika, {
+        d: _this.taikaPaths[6]
+      } );
+      _this.taikaAnim3 = createSVGAnim( _this.taika, t, 2000, 0, 'd',
+        _this.taikaPaths.join(';')+';'
+      );
     }
   },
 /** pupurun **/

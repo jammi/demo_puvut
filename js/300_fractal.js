@@ -3,7 +3,7 @@
       next: 'forest',
       defaultTreeOpts: {
         animDraw: true,
-        animSpeed: 100, // ms
+        animSpeed: 80, // ms
         maxDepth: 11,
         colors: [
           '#531','#531','#531','#531',
@@ -64,7 +64,7 @@
           }
         }
         if(!treeOpts.group){
-          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(640,680)'});
+          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(670,680)'});
         }
         var
         animMs = 0,

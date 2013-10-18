@@ -11,17 +11,98 @@
           transform:
             'translate(0,0)'
         });
+        timeline.forest.svg3 = createSVGGroup(timeline.forest.svg2,{
+          transform:
+            'translate(5800,0)'
+        });
       }, 0 );
     })(),
     trees: {
       groups: [],
       positions: []
     },
+    staticThings: function(t,elems){
+      var
+      parent = this.svg3,
+      taikasieni = frames.pikkusieni_lives,
+      i, path,
+      taika = createSVGGroup( parent, {
+        transform: 'translate(700,480)'
+      } );
+      taikasieniPaths = [];
+      for( i in taikasieni ){
+        path = taikasieni[i][0];
+        taikasieniPaths.push(horizFlipSVGPath(path));
+      }
+      this.taikaPaths = taikasieniPaths;
+      this.taikaGroup = taika;
+      this.taika = createSVGPath( taika, taikasieniPaths[0], '#00f', 4, '#66f' );
+      this.taikaAnim = createSVGAnim( this.taika, t, 500, 'indefinite', 'stroke', [
+        '#0f0',
+        '#f00',
+        '#00f'
+      ].join(';')+';' );
+      this.taikaAnim2 = createSVGAnim( this.taika, t, 600, 'indefinite', 'fill', [
+        '#00f',
+        '#0f0',
+        '#f00'
+      ].join(';')+';' );
+    },
     bunnyThings: function(t){
-      console.log('bunnyThings:',this.svg2);
+      var
+      elems = [],
+      parent = this.svg2,
+      kiviPos = [ 0, 0 ],
+      kiviScale = 0.5,
+      colors = [
+        [[ '#ccc', '#999' ]], // kivi1
+        [[ '#bbb', '#888' ]], // kivi2
+        [[ '#999', '#aaa' ]], // kivi3
+        [[ '#999', '#9c3' ],[ '#888', '#c93' ],[ '#f66', '#fff' ]], // pikkusieni
+        [[ '#fc0', '#960' ]], // kanttis
+        [[ '#fc0', '#960' ]], // rev_kanttis
+        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi
+        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi2
+        [[ '#fff', '#999' ]], // bunny_ihme
+        [[ '#fff', '#999' ]], // bunny_hoptoass
+        [[ '#fff', '#999' ]], // rev_bunny_ihme
+        [[ '#fff', '#999' ]], // rev_bunny_hoptoass
+      ],
+      kivet = [
+        frames.kivi1[0][0], frames.kivi2[0][0], frames.kivi3[0][0],
+        frames.pikkusieni[0][0],
+        frames.kanttis[0][0],
+        horizFlipSVGPath( frames.kanttis[0][0] ),
+        transSVGPath( frames.taimi[2][0], kiviPos, kiviScale ),
+        transSVGPath( frames.taimi2[0][0], kiviPos, kiviScale ),
+        transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 ),
+        transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 ),
+        horizFlipSVGPath( transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 )),
+        horizFlipSVGPath( transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 )),
+      ],i,j,grp,x=1300,y,kivi,color,
+      kiviLen = kivet.length;
+      for( ; x<4800; ){
+        j = Math.floor(Math.random()*8);
+        if( j == 7 ){
+          j += Math.floor(Math.random()*4);
+        }
+        x += Math.floor(Math.random()*180)+80; // "kivien" tiheys
+        y = 480+Math.floor(Math.random()*30)-15;
+        grp = createSVGGroup(parent,{transform:
+          'translate('+x+','+y+')'
+        });
+        color = colors[j];
+        color = color[Math.floor(Math.random()*color.length)];
+        kivi = transSVGPath( kivet[j], kiviPos, Math.random()*1.2 );
+        elems.push( createSVGPath( grp, kivi, color[0], 2, color[1] ) );
+      }
+      this.staticThings( t, elems );
+      return elems;
     },
     init: function(t){
       var
+      // scrollTime = (origSkip=='fractal')?5000:30000,
+      scrollTime = 30000,
       _this = this,
       trees = this.trees,
       positions = trees.positions,
@@ -32,8 +113,8 @@
       posDiffX = positions[posLen-1][0]-positions[0][0],
       anims = [],
       forestMoves = [],
+      elems = this.bunnyThings(t),
       fractalGroup = this.treeGroup;
-      setTimeout(function(){_this.bunnyThings(t)},10);
       anims.push(
         createSVGMoveAnim( fractalGroup, t, 12000, 0, '640,680', '-1280,680' )
       );
@@ -42,8 +123,20 @@
         transform: 'translate(-7000,0)'
       });
       anims.push(
-        createSVGMoveAnim( this.svg, t, 30000, 0, '0,0', '-7000,0' )
+        createSVGMoveAnim( this.svg, t, scrollTime, 0, '0,0', '-7000,0' )
       );
+      setSVGAttrs( this.svg2, {
+        transform: 'translate(-6000,0)'
+      });
+      anims.push(
+        createSVGMoveAnim( this.svg2, t, scrollTime, 0, '0,0', '-6000,0' )
+      );
+      setTimeout( function(){
+        timeline.pupurun.init(
+          Math.round(svgDoc.getCurrentTime()*1000),
+          true, 460
+        )
+      }, 25000 );
       for(i=0;i<76;i++){
         to += 300;
         posI = i%posLen;
