@@ -1,12 +1,52 @@
     fractal: {
-      time: 10000,
-      next: 'fractal',
+      time: 7000,
+      next: 'forest',
       defaultTreeOpts: {
         animDraw: true,
-        animSpeed: 300, // ms
-        maxDepth: 10,
+        animSpeed: 100, // ms
+        maxDepth: 11,
+        colors: [
+          '#531','#531','#531','#531',
+          '#452','#452','#452',
+          '#471','#471','#471',
+          '#392','#392','#392','#392'
+        ],
+        animStepCalls: 2,
+        animStepFn: function(){
+          var
+          forest = timeline.forest,
+          trees = forest.trees;
+          if(trees.groups.length == 22){ return; }
+          var
+          size  = Math.round(Math.random()*20)+30,
+          x = (trees.groups.length*75-size+1500),
+          y = 300-Math.round(Math.random()*50),
+          // foo = (function(){console.log('size:',size)})(),
+          group = createSVGGroup(forest.svg,{transform:
+            'translate('+x+','+y+')'
+          }),
+          opts  = {
+            maxDepth: Math.round(size/5.5),
+            colors: [
+              '#531','#531',
+              '#452',
+              '#471',
+              '#392','#392','#392',
+            ],
+            animDraw: false,
+            startX: 0,
+            startY: 200-size,
+            startLen: 10+size,
+            group: group
+          };
+          // setStyles(group,{visibility:'hidden'});
+          trees.groups.push( group );
+          trees.positions.push( [x,y] );
+          timeline.fractal.init(0,opts);
+          // console.log('group:',group);
+        },
         startX: 0,
-        startY: 680,
+        startY: 0,
         startLen: 150,
         startDeg: 270,
         isRandom: true
@@ -19,14 +59,19 @@
         };
         for(var tkey in this.defaultTreeOpts){
           // console.log('tkey:',tkey,' = ',this.defaultTreeOpts[tkey])
-          treeOpts[tkey] = this.defaultTreeOpts[tkey];
+          if(treeOpts[tkey]===undefined){
+            treeOpts[tkey] = this.defaultTreeOpts[tkey];
+          }
         }
         if(!treeOpts.group){
-          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(680,0)'});
+          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(640,680)'});
         }
         var
         animMs = 0,
+        colors = treeOpts.colors,
         animSpeed = treeOpts.animSpeed,
+        animStepCalls = treeOpts.animStepCalls,
+        animStepFn = treeOpts.animStepFn,
         animDraw = treeOpts.animDraw,
         maxDepth = treeOpts.maxDepth,
         startX = treeOpts.startX,
@@ -47,8 +92,8 @@
           x2 = _animProps[2],
           y2 = _animProps[3],
           depth = _animProps[4],
-          path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width;
-          color = (depth<4)?'#531':((depth<7)?'#452':((depth<10)?'#471':'#392'));
+          path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width,
+          color = colors[depth];
           // width = Math.round(17-depth*(depth*0.5)*0.4);
           // (width < 3) && (width = 3);
           width = maxDepth+2-depth;
@@ -96,19 +141,23 @@
             }
           }
           depth++;
+          if(animDraw){
+            for(var o=0;o<animStepCalls;o++){
+              setTimeout( animStepFn, animMs );
+            }
+          }
           animMs += animSpeed;
           genFract(nextNodes);
         },
         initCoords = [[startX,startY,startLen,startDeg]];
-        setStyles(group);
         genFract(initCoords);
         elems.push( group );
-        setTimeout( function(){
-          console.log('took:',now()-fractStart-10);
-        }, 10 );
+        if(!timeline.forest.treeGroup){
+          timeline.forest.treeGroup = group;
+        }
         return function(){
-          setStyles( group, { visibility: 'hidden' } );
-          removeElem( group );
+          setStyles( group, { zIndex: 1000 } );
+          // removeElem( group );
         };
       }
     },

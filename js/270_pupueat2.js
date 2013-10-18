@@ -3,7 +3,7 @@
       time: 1100,
       next: 'pupueat3',
       init: function(t){
-        removeElem( timeline.plant3.plant );
+        removeElem( timeline.plant3.bplant );
         timeline.pupurun2.init(t,true);
         var
         paths = frames.bunny_eats, elem, anim, i,
@@ -14,7 +14,7 @@
         path4 = transSVGPath( paths[4][0], [ -120, -20 ], 1.33 ),
         path5 = transSVGPath( paths[5][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(675,330)'
+          transform: 'translate(475,330)'
         } ),
         elems = [
           group,
@@ -31,11 +31,11 @@
           ].join(';')+';' )
         ],
         i,
-        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 480, 450 ], 1 ),
-        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 480, 450 ], 1 ),
-        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 480, 450 ], 1 ),
-        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 480, 450 ], 1 ),
-        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 480, 450 ], 1 );
+        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 280, 450 ], 1 ),
+        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 280, 450 ], 1 ),
+        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 280, 450 ], 1 ),
+        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 280, 450 ], 1 ),
+        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 280, 450 ], 1 );
         this.plant = createSVGPath( svgDoc, plantpath0, '#fff', 4, colors.plant0[1] );
         this.plantanim = createSVGAnim( this.plant, t, 1100, 0, 'd', [
             plantpath0,

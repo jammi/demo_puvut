@@ -24,7 +24,7 @@
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '670,330' )
+          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '470,330' )
         ],
         i;
         return function(){

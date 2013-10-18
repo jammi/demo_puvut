@@ -1,3 +1,27 @@
+    wait: {
+      time: 5000,
+      next: 'load',
+      init: function(){
+        console.log(svgDoc.style.height);
+        var
+        elem = createElem(b,'div');
+        elem.innerHTML = 'click to enter fullscreen!';
+        setStyles( elem, {
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          color: 'white',
+          fontFamily: 'sans-serif',
+          height: svgDoc.style.height,
+          lineHeight: (parseInt(svgDoc.style.height,10)*0.5)+'px',
+          fontSize: (parseInt(svgDoc.style.height,10)*0.25)+'px',
+          textAlign: 'center',
+          verticalAlign: 'middle'
+        } );
+        return function(){
+          removeElem(elem);
+        }
+      }
+    },
     load: {
       // does the suit and tie thing
       init: function(t){
@@ -34,13 +58,7 @@
         ruAnims.push( createSVGRotAnim( rusetti, t+4500, 1000, 0, -30, 60 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+5500, 1000, 0, 60, -90 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+6500, 500, 0, -90, 90 ) );
-        ruAnims.push( createSVGRotAnim( rusetti, t+7000, 3000, 'indefinite', 90, 1170 ) );
-        setTimeout( function(){
-          _this.music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
-        }, 10 );
-        setTimeout( function(){
-          _this.music.play();
-        }, 1400 );
+        ruAnims.push( createSVGRotAnim( rusetti, t+7000, 1800, 'indefinite', 90, 1170 ) );
         return function(){
           for( i in anims ){ removeElem( anims[i] ); }
           for( i in elems ){ removeElem( elems[i] ); }

@@ -9,7 +9,7 @@
         path0 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
         path1 = transSVGPath( paths[1][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(695,345)'
+          transform: 'translate(495,345)'
         } ),
         elems = [
           group,

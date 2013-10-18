@@ -6,13 +6,15 @@ body {background:#000;}
 <script type="text/javascript">
 /** header **/
 (function(){
-  var _resizer = window.addEventListener('resize',function(){
-    window.removeEventListener(_resizer);
-    setTimeout( function(){window.location.reload(true);}, 500 );
-  });
 window.addEventListener('load',function(){
   var
   w = window,
+  isInFullScreen = false,
+  _resizer = w.addEventListener('resize',function(){
+    if(isInFullScreen){return;}
+    window.removeEventListener(_resizer);
+    setTimeout( function(){window.location.reload(true);}, 500 );
+  }),
   d = window.document,
   b = d.body,
   u = undefined,
@@ -58,7 +60,7 @@ window.addEventListener('load',function(){
     elem.parentNode.removeChild(elem);
   },
 /** svgutil **/
-  createSVG = function(p,rect,viewBox){
+  createSVG = function(p,rect,viewBox,allowFullScreen){
     if(!rect){
       rect = [0,0,320,320];
     }
@@ -69,8 +71,8 @@ window.addEventListener('load',function(){
     x = rect[0],
     y = rect[1],
     w = rect[2],
-    h = rect[3];
-    return createElemNS( b, 'svg', svgNS, {
+    h = rect[3],
+    elem = createElemNS( b, 'svg', svgNS, {
       style: {
         left: x+'px', top: y+'px',
         width: w+'px', height: h+'px'
@@ -78,8 +80,42 @@ window.addEventListener('load',function(){
       xmlns: svgNS,
       viewBox: viewBox,
       preserveAspectRatio: 'xMidYMid slice',
-      version: '1.1'
+      version: '1.1',
+      allowFullScreen: allowFullScreen
     });
+    if( allowFullScreen ){
+      document.body.addEventListener('click',function(){
+        // window.removeEventListener(_resizer);
+        setTimeout(function(){
+          var
+          rect = svgRectFn(),
+          x = rect[0],
+          y = rect[1],
+          w = rect[2],
+          h = rect[3];
+          setStyles( elem, {
+            left: x+'px', top: y+'px',
+            width: w+'px', height: h+'px',
+            backgroundColor: '#000'
+          } );
+          isInFullScreen = false;
+          console.log(rect);
+        }, 200 );
+        if(!isInFullScreen){
+          isInFullScreen = true;
+          if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+          }
+          else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen();
+          }
+          else if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+          }
+        }
+      });
+    }
+    return elem;
   },
   svgPathMatch = {
     instr: /([a-zA-Z])([\-0-9]+?),([0-9]+?)/,
@@ -136,7 +172,7 @@ window.addEventListener('load',function(){
   offsetSVGPath = function( path, offset ){
     return transSVGPath( path, offset, null );
   },
-  svgRect = (function(){
+  svgRectFn = function(){
     var
     rect = [ 0,0,640,360 ],
     w = window.innerWidth,
@@ -151,8 +187,8 @@ window.addEventListener('load',function(){
       rect[3] = h;
     }
     return rect;
-  })(),
-  svgDoc = createSVG( b, svgRect, '0,0,1280,720' ),
+  },
+  svgRect = svgRectFn(),
   createSVGAnim = function( elem, begin, dur, repeat, attr, values ){
     return createElemNS( elem, 'animate', svgNS, {
       begin: begin+'ms',
@@ -425,7 +461,8 @@ window.addEventListener('load',function(){
     ],
     "klingonstarship": [
       [
-        "M249,120 L267,101 L291,101 L304,117 L292,139 L269,137 L251,134 L190,135 L187,146 L165,147 L144,144 L116,146 L92,175 L159,174 L152,201 C152,201 44,206 44,204 C43,203 37,193 37,193 L35,177 L70,175 L69,126 L108,125 L109,108 L95,83 L134,83 L162,93 L186,93 L197,111 L249,120 z"
+        "M130,97 L90,83 L153,79 L208,122 L209,134 L218,140 L210,145 L209,162 L57,158 L62,141 L75,141 L85,145 L114,144 L131,138 L153,117 L130,97 z",
+        "M128,222 L151,204 L130,181 L114,174 L85,172 L75,175 L62,175 L58,158 L209,162 L210,178 L218,184 L208,189 L207,201 L149,241 L86,234 L128,222 z"
       ]
     ],
     "pikkusieni": [
@@ -561,7 +598,10 @@ Bunny = (function(){
     bunny2: [ '#fff', 'rgb(235,226,191)' ],
   },
 /** timeline0 **/
-  next = 'fractal',
+  next = 'wait',
+  // skipTo = false,
+  skipTo = 'plant',
+  firstNext = next,
   prevKill,
   prevItem,
   runTime = 0,
@@ -620,27 +660,45 @@ Bunny = (function(){
   itemStart = 0,
   itemTime = 0,
   endTime = 0,
+  svgDoc = createSVG( b, svgRect, '0,0,1280,720', true ),
   nextStep = function(){
+    // console.log(svgDoc.getCurrentTime());
     var
     start = now(), end, took,
     item,
+    timelineText,
+    prevNext = next,
     kill;
     itemStart = start;
     if( next ){
       item = timeline[next];
+      // devel && console.log('start time of ',next,': ',(now()-timerStarted));
       endTime = item.time;
       itemTime = endTime;
-      timelineText = 'item: '+next
+      devel && (timelineText = 'item: '+next);
       next = item.next;
-      timelineText += '<br>next: '+next;
+      devel && (timelineText += '<br>next: '+next);
       devel && (timelineElem.innerHTML = timelineText);
-      kill = item.init(runTime);
-      if( prevKill ){
-        setTimeout( prevKill, 50 );
-        prevKill = null;
-      }
-      if( kill ){
-        prevKill = kill;
+      if( !skipTo || prevNext == skipTo ){
+        if( skipTo ){
+          skipTo = false;
+          svgDoc.setCurrentTime(runTime/1000);
+          timeline.music.currentTime = svgDoc.getCurrentTime()-6.4;
+          timeline.music.play();
+        }
+        else if( prevNext == 'load' ){
+          setTimeout( function(){
+            timeline.music.play();
+          }, 1400 );
+        }
+        kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
+        if( prevKill ){
+          setTimeout( prevKill, 50 );
+          prevKill = null;
+        }
+        if( kill ){
+          prevKill = kill;
+        }
       }
       prevItem = item;
     }
@@ -652,19 +710,73 @@ Bunny = (function(){
       endTime = 0;
     }
 
-    end = now(); took = end-start;
-    endTime -= took - 10;
-    if( endTime < 10 ){ endTime = 10; }
-    runTime += endTime;
-    devel && (
-      endTimeElem.innerHTML = (
-        ' start: ' + (itemStart-timerStarted) +
-        ' dur: ' + itemTime +
-        ' end: '+runTime)+'ms' );
-    setTimeout( nextStep, endTime );
+    if(skipTo){
+      endTime-=10;
+      runTime += endTime;
+      timerStarted -= endTime;
+      setTimeout( nextStep, 10 );
+    }
+    else {
+      end = now(); took = end-start;
+      endTime -= took - 10;
+      if( endTime < 10 ){ endTime = 10; }
+      runTime += endTime;
+      devel && (
+        endTimeElem.innerHTML = (
+          ' start: ' + (itemStart-timerStarted) +
+          ' dur: ' + itemTime +
+          ' end: '+runTime)+'ms'
+        );
+      setTimeout( nextStep, endTime );
+    }
   };
   timeline = {
+    musicLoaded: false,
+    music: (function(){
+      var
+      music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
+      music.volume = 0;
+      music.play();
+      music.addEventListener('canplay',function(){
+        if( timeline.musicLoaded ){return;}
+        timeline.musicLoaded = true;
+        console.log('canplay');
+        music.pause();
+        setTimeout( function(){
+          music.volume = 1;
+          music.currentTime=0;
+          svgDoc.setCurrentTime(0);
+          createTimer();
+          nextStep();
+        }, 1000 );
+      });
+      return music;
+    })(),
 /** load **/
+    wait: {
+      time: 5000,
+      next: 'load',
+      init: function(){
+        console.log(svgDoc.style.height);
+        var
+        elem = createElem(b,'div');
+        elem.innerHTML = 'click to enter fullscreen!';
+        setStyles( elem, {
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          color: 'white',
+          fontFamily: 'sans-serif',
+          height: svgDoc.style.height,
+          lineHeight: (parseInt(svgDoc.style.height,10)*0.5)+'px',
+          fontSize: (parseInt(svgDoc.style.height,10)*0.25)+'px',
+          textAlign: 'center',
+          verticalAlign: 'middle'
+        } );
+        return function(){
+          removeElem(elem);
+        }
+      }
+    },
     load: {
       // does the suit and tie thing
       init: function(t){
@@ -701,13 +813,7 @@ Bunny = (function(){
         ruAnims.push( createSVGRotAnim( rusetti, t+4500, 1000, 0, -30, 60 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+5500, 1000, 0, 60, -90 ) );
         ruAnims.push( createSVGRotAnim( rusetti, t+6500, 500, 0, -90, 90 ) );
-        ruAnims.push( createSVGRotAnim( rusetti, t+7000, 3000, 'indefinite', 90, 1170 ) );
-        setTimeout( function(){
-          _this.music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
-        }, 10 );
-        setTimeout( function(){
-          _this.music.play();
-        }, 1400 );
+        ruAnims.push( createSVGRotAnim( rusetti, t+7000, 1800, 'indefinite', 90, 1170 ) );
         return function(){
           for( i in anims ){ removeElem( anims[i] ); }
           for( i in elems ){ removeElem( elems[i] ); }
@@ -731,7 +837,7 @@ Bunny = (function(){
           removeElem( rusetti );
         };
       },
-      time: 20000,
+      time: 21000,
       next: 'plant'
     },
 /** plant **/
@@ -746,7 +852,7 @@ Bunny = (function(){
         path3 = transSVGPath( paths[3][0], [ 410, 410 ], 1.5 ),
         path4 = transSVGPath( paths[3][0], [ 410, 480 ], 1.5 ),
         elem = createSVGPath( svgDoc, path0, '#fff', 4, '#c30' ),
-        anim = createSVGAnim( elem, t, 1100, 0, 'd', [
+        anim = createSVGAnim( elem, t+100, 1000, 0, 'd', [
             path0,
             path1,
             path2,
@@ -783,14 +889,24 @@ Bunny = (function(){
         path0 = transSVGPath( paths[0][0], [ 480, 450 ], 1 ),
         path1 = transSVGPath( paths[1][0], [ 480, 450 ], 1 ),
         path2 = transSVGPath( paths[2][0], [ 480, 450 ], 1 ),
+        bpath0 = transSVGPath( paths[0][0], [ 280, 450 ], 1 ),
+        bpath1 = transSVGPath( paths[1][0], [ 280, 450 ], 1 ),
+        bpath2 = transSVGPath( paths[2][0], [ 280, 450 ], 1 ),
         elems = [],
         anims = [],
         i;
-        elems.push( createSVGPath( svgDoc, path0, '#fff', 4, '#390' ) );
-        anims.push( createSVGAnim( elems[0], t, 4000, 0, 'd', [
+        elems.push( createSVGPath( svgDoc, path2, '#fff', 4, '#390' ) );
+        anims.push( createSVGAnim( elems[0], t, 4200, 0, 'd', [
             path0,
             path1,
             path2
+          ].join(';')+';'
+        ) );
+        elems.push( createSVGPath( svgDoc, bpath0, '#fff', 4, '#390' ) );
+        anims.push( createSVGAnim( elems[1], t+1000, 3200, 0, 'd', [
+            bpath0,
+            bpath1,
+            bpath2
           ].join(';')+';'
         ) );
         return function(){
@@ -808,6 +924,8 @@ Bunny = (function(){
         var
         paths = frames.taimi2kasvaa,
         path0 = transSVGPath( paths[2][0], [ 480, 450 ], 1 );
+        bpath0 = transSVGPath( paths[2][0], [ 280, 450 ], 1 );
+        this.bplant = createSVGPath( svgDoc, bpath0, '#fff', 4, colors.plant0[1] );
         this.plant = createSVGPath( svgDoc, path0, '#fff', 4, colors.plant0[1] );
         return function(){
         };
@@ -840,7 +958,7 @@ Bunny = (function(){
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '670,330' )
+          createSVGMoveAnim( elems[0], t, 3000, 0, '1280,330', '470,330' )
         ],
         i;
         return function(){
@@ -862,7 +980,7 @@ Bunny = (function(){
         path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
         path2 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(670,320)'
+          transform: 'translate(470,320)'
         } ),
         elems = [
           group,
@@ -888,7 +1006,7 @@ Bunny = (function(){
       time: 1100,
       next: 'pupueat3',
       init: function(t){
-        removeElem( timeline.plant3.plant );
+        removeElem( timeline.plant3.bplant );
         timeline.pupurun2.init(t,true);
         var
         paths = frames.bunny_eats, elem, anim, i,
@@ -899,7 +1017,7 @@ Bunny = (function(){
         path4 = transSVGPath( paths[4][0], [ -120, -20 ], 1.33 ),
         path5 = transSVGPath( paths[5][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(675,330)'
+          transform: 'translate(475,330)'
         } ),
         elems = [
           group,
@@ -916,11 +1034,11 @@ Bunny = (function(){
           ].join(';')+';' )
         ],
         i,
-        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 480, 450 ], 1 ),
-        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 480, 450 ], 1 ),
-        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 480, 450 ], 1 ),
-        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 480, 450 ], 1 ),
-        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 480, 450 ], 1 );
+        plantpath0 = transSVGPath( frames.taimi_gets_eaten[0][0], [ 280, 450 ], 1 ),
+        plantpath1 = transSVGPath( frames.taimi_gets_eaten[1][0], [ 280, 450 ], 1 ),
+        plantpath2 = transSVGPath( frames.taimi_gets_eaten[2][0], [ 280, 450 ], 1 ),
+        plantpath3 = transSVGPath( frames.taimi_gets_eaten[3][0], [ 280, 450 ], 1 ),
+        plantpath4 = transSVGPath( frames.taimi_gets_eaten[4][0], [ 280, 450 ], 1 );
         this.plant = createSVGPath( svgDoc, plantpath0, '#fff', 4, colors.plant0[1] );
         this.plantanim = createSVGAnim( this.plant, t, 1100, 0, 'd', [
             plantpath0,
@@ -954,7 +1072,7 @@ Bunny = (function(){
         path0 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
         path1 = transSVGPath( paths[1][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(695,345)'
+          transform: 'translate(495,345)'
         } ),
         elems = [
           group,
@@ -978,17 +1096,17 @@ Bunny = (function(){
       time: 1100,
       next: 'pupueat5',
       init: function(t){
-        timeline.pupurun2.init(t,true);
+        setTimeout( timeline.pupurun2.init(t,true), 500 );
         var
         paths = frames.bunny_eats, elem, anim, i,
-        path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.4 ),
-        path4 = transSVGPath( paths[1][0], [ -120, -20 ], 1.4 ),
-        path3 = transSVGPath( paths[2][0], [ -120, -20 ], 1.4 ),
-        path2 = transSVGPath( paths[3][0], [ -120, -20 ], 1.4 ),
-        path1 = transSVGPath( paths[4][0], [ -120, -20 ], 1.4 ),
-        path0 = transSVGPath( paths[5][0], [ -120, -20 ], 1.4 ),
+        path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
+        path4 = transSVGPath( paths[1][0], [ -120, -20 ], 1.33 ),
+        path3 = transSVGPath( paths[2][0], [ -120, -20 ], 1.33 ),
+        path2 = transSVGPath( paths[3][0], [ -120, -20 ], 1.33 ),
+        path1 = transSVGPath( paths[4][0], [ -120, -20 ], 1.33 ),
+        path0 = transSVGPath( paths[5][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(675,330)'
+          transform: 'translate(475,330)'
         } ),
         elems = [
           group,
@@ -1022,7 +1140,7 @@ Bunny = (function(){
         path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
         path0 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(670,320)'
+          transform: 'translate(470,320)'
         } ),
         elems = [
           group,
@@ -1046,7 +1164,7 @@ Bunny = (function(){
     // shows the bunny
     pupuexit: {
       time: 3000,
-      next: 'end',
+      next: 'fractal',
       init: function(t){
         var
         paths = frames.bunny_hop,
@@ -1069,25 +1187,66 @@ Bunny = (function(){
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 2800, 0, '670,330', '-330,330' )
+          createSVGMoveAnim( elems[0], t, 2800, 0, '470,330', '-330,330' )
         ],
         i;
         return function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
+          removeElem( timeline.plant3.plant );
         };
       }
     },
 /** fractal **/
     fractal: {
-      time: 10000,
-      next: 'fractal',
+      time: 7000,
+      next: 'forest',
       defaultTreeOpts: {
         animDraw: true,
-        animSpeed: 300, // ms
-        maxDepth: 10,
+        animSpeed: 100, // ms
+        maxDepth: 11,
+        colors: [
+          '#531','#531','#531','#531',
+          '#452','#452','#452',
+          '#471','#471','#471',
+          '#392','#392','#392','#392'
+        ],
+        animStepCalls: 2,
+        animStepFn: function(){
+          var
+          forest = timeline.forest,
+          trees = forest.trees;
+          if(trees.groups.length == 22){ return; }
+          var
+          size  = Math.round(Math.random()*20)+30,
+          x = (trees.groups.length*75-size+1500),
+          y = 300-Math.round(Math.random()*50),
+          // foo = (function(){console.log('size:',size)})(),
+          group = createSVGGroup(forest.svg,{transform:
+            'translate('+x+','+y+')'
+          }),
+          opts  = {
+            maxDepth: Math.round(size/5.5),
+            colors: [
+              '#531','#531',
+              '#452',
+              '#471',
+              '#392','#392','#392',
+            ],
+            animDraw: false,
+            startX: 0,
+            startY: 200-size,
+            startLen: 10+size,
+            group: group
+          };
+          // setStyles(group,{visibility:'hidden'});
+          trees.groups.push( group );
+          trees.positions.push( [x,y] );
+          timeline.fractal.init(0,opts);
+          // console.log('group:',group);
+        },
         startX: 0,
-        startY: 680,
+        startY: 0,
         startLen: 150,
         startDeg: 270,
         isRandom: true
@@ -1100,14 +1259,19 @@ Bunny = (function(){
         };
         for(var tkey in this.defaultTreeOpts){
           // console.log('tkey:',tkey,' = ',this.defaultTreeOpts[tkey])
-          treeOpts[tkey] = this.defaultTreeOpts[tkey];
+          if(treeOpts[tkey]===undefined){
+            treeOpts[tkey] = this.defaultTreeOpts[tkey];
+          }
         }
         if(!treeOpts.group){
-          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(680,0)'});
+          treeOpts.group = createSVGGroup(svgDoc,{transform: 'translate(640,680)'});
         }
         var
         animMs = 0,
+        colors = treeOpts.colors,
         animSpeed = treeOpts.animSpeed,
+        animStepCalls = treeOpts.animStepCalls,
+        animStepFn = treeOpts.animStepFn,
         animDraw = treeOpts.animDraw,
         maxDepth = treeOpts.maxDepth,
         startX = treeOpts.startX,
@@ -1128,8 +1292,8 @@ Bunny = (function(){
           x2 = _animProps[2],
           y2 = _animProps[3],
           depth = _animProps[4],
-          path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width;
-          color = (depth<4)?'#531':((depth<7)?'#452':((depth<10)?'#471':'#392'));
+          path = 'M'+x+','+y+' L'+x2+','+y2+' z', color, width,
+          color = colors[depth];
           // width = Math.round(17-depth*(depth*0.5)*0.4);
           // (width < 3) && (width = 3);
           width = maxDepth+2-depth;
@@ -1177,28 +1341,112 @@ Bunny = (function(){
             }
           }
           depth++;
+          if(animDraw){
+            for(var o=0;o<animStepCalls;o++){
+              setTimeout( animStepFn, animMs );
+            }
+          }
           animMs += animSpeed;
           genFract(nextNodes);
         },
         initCoords = [[startX,startY,startLen,startDeg]];
-        setStyles(group);
         genFract(initCoords);
         elems.push( group );
-        setTimeout( function(){
-          console.log('took:',now()-fractStart-10);
-        }, 10 );
+        if(!timeline.forest.treeGroup){
+          timeline.forest.treeGroup = group;
+        }
         return function(){
-          setStyles( group, { visibility: 'hidden' } );
-          removeElem( group );
+          setStyles( group, { zIndex: 1000 } );
+          // removeElem( group );
         };
       }
     },
+/** forest **/
+  forest: {
+    time: 30000,
+    next: 'pupumush',
+    svg: (function(){
+      setTimeout( function(){
+        timeline.forest.svg = createSVGGroup(svgDoc,{
+          transform:
+            'translate(0,0)'
+        });
+        timeline.forest.svg2 = createSVGGroup(svgDoc,{
+          transform:
+            'translate(0,0)'
+        });
+      }, 0 );
+    })(),
+    trees: {
+      groups: [],
+      positions: []
+    },
+    bunnyThings: function(t){
+      console.log('bunnyThings:',this.svg2);
+    },
+    init: function(t){
+      var
+      _this = this,
+      trees = this.trees,
+      positions = trees.positions,
+      groups = trees.groups,
+      i, tree, pos, x, xs = [], to = 7000,
+      posI,
+      posLen = positions.length,
+      posDiffX = positions[posLen-1][0]-positions[0][0],
+      anims = [],
+      forestMoves = [],
+      fractalGroup = this.treeGroup;
+      setTimeout(function(){_this.bunnyThings(t)},10);
+      anims.push(
+        createSVGMoveAnim( fractalGroup, t, 12000, 0, '640,680', '-1280,680' )
+      );
+      setTimeout(function(){removeElem(fractalGroup);},8500);
+      setSVGAttrs( this.svg, {
+        transform: 'translate(-7000,0)'
+      });
+      anims.push(
+        createSVGMoveAnim( this.svg, t, 30000, 0, '0,0', '-7000,0' )
+      );
+      for(i=0;i<76;i++){
+        to += 300;
+        posI = i%posLen;
+        pos = positions[posI];
+        pos[0] += posDiffX;
+        forestMoves.push( [ groups[posI], pos[0], pos[1] ] );
+        setTimeout( function(){
+          var
+          gPosXY = forestMoves.shift(),
+          grp = gPosXY[0],
+          x = gPosXY[1],
+          y = gPosXY[2];
+          setSVGAttrs( grp, {
+            transform: 'translate('+x+','+y+')'
+          } );
+        }, to );
+      }
+      return function(){
+        for( i in anims ){
+          removeElem( anims[i] );
+        }
+      };
+    }
+  },
+/** pupumush **/
+  pupumush: {
+    next: 'end',
+    time: 150000,
+    init: function(t){
+      console.log('pupumush');
+    }
+  },
 /** pupurun **/
     // pupu sits to eat
     pupurun: {
       time: 4000,
       next: 'end',
-      init: function(t,selfKill){
+      init: function(t,selfKill,top){
+        (!top) && (top = 100);
         var i, elems = [], anims = [],
         paths = frames.bunny_leap,
         lpath0 = scaleSVGPath( horizFlipSVGPath( paths[0][0] ), 0.6 ),
@@ -1237,8 +1485,8 @@ Bunny = (function(){
             rpath3
           ].join(';')+';' )
         );
-        anims.push( createSVGMoveAnim( group, t, 2200, 0, '-330,100', '1500,100' ) );
-        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '1330,150', '-330,150' ) );
+        anims.push( createSVGMoveAnim( group, t, 2200, 0, '-330,'+top, '1500,'+top ) );
+        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '1330,'+(top+50), '-330,'+(top+50) ) );
         var kill = function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
@@ -1255,7 +1503,8 @@ Bunny = (function(){
     pupurun2: {
       time: 4000,
       next: 'end',
-      init: function(t,selfKill){
+      init: function(t,selfKill,top){
+        (!top) && (top = 100);
         var i, elems = [], anims = [],
         paths = frames.bunny_leap,
         rpath0 = scaleSVGPath( horizFlipSVGPath( paths[0][0] ), 0.75 ),
@@ -1294,8 +1543,8 @@ Bunny = (function(){
             rpath3
           ].join(';')+';' )
         );
-        anims.push( createSVGMoveAnim( group, t, 2200, 0, '1500,100', '-330,100' ) );
-        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '-330,150', '1330,150' ) );
+        anims.push( createSVGMoveAnim( group, t, 2200, 0, '1500,'+top, '-330,'+top ) );
+        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '-330,'+(top+50), '1330,'+(top+50) ) );
         var kill = function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
@@ -1316,13 +1565,11 @@ Bunny = (function(){
       }
     }
 /** timeline1 **/
-  },
-  setStyles( svgDoc, {
+  };
+  devel && setStyles( svgDoc, {
     borderRight: '1px solid #fc0',
     borderBottom: '1px solid #fc0'
   } );
-  createTimer();
-  nextStep();
 /** footer **/
 });
 })();

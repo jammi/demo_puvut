@@ -1,4 +1,7 @@
-  next = 'fractal',
+  next = 'wait',
+  // skipTo = false,
+  skipTo = 'plant',
+  firstNext = next,
   prevKill,
   prevItem,
   runTime = 0,
@@ -57,27 +60,45 @@
   itemStart = 0,
   itemTime = 0,
   endTime = 0,
+  svgDoc = createSVG( b, svgRect, '0,0,1280,720', true ),
   nextStep = function(){
+    // console.log(svgDoc.getCurrentTime());
     var
     start = now(), end, took,
     item,
+    timelineText,
+    prevNext = next,
     kill;
     itemStart = start;
     if( next ){
       item = timeline[next];
+      // devel && console.log('start time of ',next,': ',(now()-timerStarted));
       endTime = item.time;
       itemTime = endTime;
-      timelineText = 'item: '+next
+      devel && (timelineText = 'item: '+next);
       next = item.next;
-      timelineText += '<br>next: '+next;
+      devel && (timelineText += '<br>next: '+next);
       devel && (timelineElem.innerHTML = timelineText);
-      kill = item.init(runTime);
-      if( prevKill ){
-        setTimeout( prevKill, 50 );
-        prevKill = null;
-      }
-      if( kill ){
-        prevKill = kill;
+      if( !skipTo || prevNext == skipTo ){
+        if( skipTo ){
+          skipTo = false;
+          svgDoc.setCurrentTime(runTime/1000);
+          timeline.music.currentTime = svgDoc.getCurrentTime()-6.4;
+          timeline.music.play();
+        }
+        else if( prevNext == 'load' ){
+          setTimeout( function(){
+            timeline.music.play();
+          }, 1400 );
+        }
+        kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
+        if( prevKill ){
+          setTimeout( prevKill, 50 );
+          prevKill = null;
+        }
+        if( kill ){
+          prevKill = kill;
+        }
       }
       prevItem = item;
     }
@@ -89,15 +110,45 @@
       endTime = 0;
     }
 
-    end = now(); took = end-start;
-    endTime -= took - 10;
-    if( endTime < 10 ){ endTime = 10; }
-    runTime += endTime;
-    devel && (
-      endTimeElem.innerHTML = (
-        ' start: ' + (itemStart-timerStarted) +
-        ' dur: ' + itemTime +
-        ' end: '+runTime)+'ms' );
-    setTimeout( nextStep, endTime );
+    if(skipTo){
+      endTime-=10;
+      runTime += endTime;
+      timerStarted -= endTime;
+      setTimeout( nextStep, 10 );
+    }
+    else {
+      end = now(); took = end-start;
+      endTime -= took - 10;
+      if( endTime < 10 ){ endTime = 10; }
+      runTime += endTime;
+      devel && (
+        endTimeElem.innerHTML = (
+          ' start: ' + (itemStart-timerStarted) +
+          ' dur: ' + itemTime +
+          ' end: '+runTime)+'ms'
+        );
+      setTimeout( nextStep, endTime );
+    }
   };
   timeline = {
+    musicLoaded: false,
+    music: (function(){
+      var
+      music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
+      music.volume = 0;
+      music.play();
+      music.addEventListener('canplay',function(){
+        if( timeline.musicLoaded ){return;}
+        timeline.musicLoaded = true;
+        console.log('canplay');
+        music.pause();
+        setTimeout( function(){
+          music.volume = 1;
+          music.currentTime=0;
+          svgDoc.setCurrentTime(0);
+          createTimer();
+          nextStep();
+        }, 1000 );
+      });
+      return music;
+    })(),

@@ -2,7 +2,8 @@
     pupurun: {
       time: 4000,
       next: 'end',
-      init: function(t,selfKill){
+      init: function(t,selfKill,top){
+        (!top) && (top = 100);
         var i, elems = [], anims = [],
         paths = frames.bunny_leap,
         lpath0 = scaleSVGPath( horizFlipSVGPath( paths[0][0] ), 0.6 ),
@@ -41,8 +42,8 @@
             rpath3
           ].join(';')+';' )
         );
-        anims.push( createSVGMoveAnim( group, t, 2200, 0, '-330,100', '1500,100' ) );
-        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '1330,150', '-330,150' ) );
+        anims.push( createSVGMoveAnim( group, t, 2200, 0, '-330,'+top, '1500,'+top ) );
+        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '1330,'+(top+50), '-330,'+(top+50) ) );
         var kill = function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
@@ -59,7 +60,8 @@
     pupurun2: {
       time: 4000,
       next: 'end',
-      init: function(t,selfKill){
+      init: function(t,selfKill,top){
+        (!top) && (top = 100);
         var i, elems = [], anims = [],
         paths = frames.bunny_leap,
         rpath0 = scaleSVGPath( horizFlipSVGPath( paths[0][0] ), 0.75 ),
@@ -98,8 +100,8 @@
             rpath3
           ].join(';')+';' )
         );
-        anims.push( createSVGMoveAnim( group, t, 2200, 0, '1500,100', '-330,100' ) );
-        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '-330,150', '1330,150' ) );
+        anims.push( createSVGMoveAnim( group, t, 2200, 0, '1500,'+top, '-330,'+top ) );
+        anims.push( createSVGMoveAnim( group2, t+500, 2200, 0, '-330,'+(top+50), '1330,'+(top+50) ) );
         var kill = function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }

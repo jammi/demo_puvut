@@ -1,7 +1,7 @@
     // shows the bunny
     pupuexit: {
       time: 3000,
-      next: 'end',
+      next: 'fractal',
       init: function(t){
         var
         paths = frames.bunny_hop,
@@ -24,12 +24,13 @@
             path2,
             path3
           ].join(';')+';' ),
-          createSVGMoveAnim( elems[0], t, 2800, 0, '670,330', '-330,330' )
+          createSVGMoveAnim( elems[0], t, 2800, 0, '470,330', '-330,330' )
         ],
         i;
         return function(){
           for( i in elems ){ removeElem( elems[i] ); }
           for( i in anims ){ removeElem( anims[i] ); }
+          removeElem( timeline.plant3.plant );
         };
       }
     },

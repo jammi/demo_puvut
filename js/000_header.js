@@ -1,11 +1,13 @@
 (function(){
-  var _resizer = window.addEventListener('resize',function(){
-    window.removeEventListener(_resizer);
-    setTimeout( function(){window.location.reload(true);}, 500 );
-  });
 window.addEventListener('load',function(){
   var
   w = window,
+  isInFullScreen = false,
+  _resizer = w.addEventListener('resize',function(){
+    if(isInFullScreen){return;}
+    window.removeEventListener(_resizer);
+    setTimeout( function(){window.location.reload(true);}, 500 );
+  }),
   d = window.document,
   b = d.body,
   u = undefined,

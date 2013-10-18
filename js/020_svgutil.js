@@ -1,4 +1,4 @@
-  createSVG = function(p,rect,viewBox){
+  createSVG = function(p,rect,viewBox,allowFullScreen){
     if(!rect){
       rect = [0,0,320,320];
     }
@@ -9,8 +9,8 @@
     x = rect[0],
     y = rect[1],
     w = rect[2],
-    h = rect[3];
-    return createElemNS( b, 'svg', svgNS, {
+    h = rect[3],
+    elem = createElemNS( b, 'svg', svgNS, {
       style: {
         left: x+'px', top: y+'px',
         width: w+'px', height: h+'px'
@@ -18,8 +18,42 @@
       xmlns: svgNS,
       viewBox: viewBox,
       preserveAspectRatio: 'xMidYMid slice',
-      version: '1.1'
+      version: '1.1',
+      allowFullScreen: allowFullScreen
     });
+    if( allowFullScreen ){
+      document.body.addEventListener('click',function(){
+        // window.removeEventListener(_resizer);
+        setTimeout(function(){
+          var
+          rect = svgRectFn(),
+          x = rect[0],
+          y = rect[1],
+          w = rect[2],
+          h = rect[3];
+          setStyles( elem, {
+            left: x+'px', top: y+'px',
+            width: w+'px', height: h+'px',
+            backgroundColor: '#000'
+          } );
+          isInFullScreen = false;
+          console.log(rect);
+        }, 200 );
+        if(!isInFullScreen){
+          isInFullScreen = true;
+          if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+          }
+          else if (elem.webkitRequestFullScreen) {
+            elem.webkitRequestFullScreen();
+          }
+          else if (elem.requestFullScreen) {
+            elem.requestFullScreen();
+          }
+        }
+      });
+    }
+    return elem;
   },
   svgPathMatch = {
     instr: /([a-zA-Z])([\-0-9]+?),([0-9]+?)/,
@@ -76,7 +110,7 @@
   offsetSVGPath = function( path, offset ){
     return transSVGPath( path, offset, null );
   },
-  svgRect = (function(){
+  svgRectFn = function(){
     var
     rect = [ 0,0,640,360 ],
     w = window.innerWidth,
@@ -91,8 +125,8 @@
       rect[3] = h;
     }
     return rect;
-  })(),
-  svgDoc = createSVG( b, svgRect, '0,0,1280,720' ),
+  },
+  svgRect = svgRectFn(),
   createSVGAnim = function( elem, begin, dur, repeat, attr, values ){
     return createElemNS( elem, 'animate', svgNS, {
       begin: begin+'ms',

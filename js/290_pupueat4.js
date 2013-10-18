@@ -2,17 +2,17 @@
       time: 1100,
       next: 'pupueat5',
       init: function(t){
-        timeline.pupurun2.init(t,true);
+        setTimeout( timeline.pupurun2.init(t,true), 500 );
         var
         paths = frames.bunny_eats, elem, anim, i,
-        path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.4 ),
-        path4 = transSVGPath( paths[1][0], [ -120, -20 ], 1.4 ),
-        path3 = transSVGPath( paths[2][0], [ -120, -20 ], 1.4 ),
-        path2 = transSVGPath( paths[3][0], [ -120, -20 ], 1.4 ),
-        path1 = transSVGPath( paths[4][0], [ -120, -20 ], 1.4 ),
-        path0 = transSVGPath( paths[5][0], [ -120, -20 ], 1.4 ),
+        path5 = transSVGPath( paths[0][0], [ -120, -20 ], 1.33 ),
+        path4 = transSVGPath( paths[1][0], [ -120, -20 ], 1.33 ),
+        path3 = transSVGPath( paths[2][0], [ -120, -20 ], 1.33 ),
+        path2 = transSVGPath( paths[3][0], [ -120, -20 ], 1.33 ),
+        path1 = transSVGPath( paths[4][0], [ -120, -20 ], 1.33 ),
+        path0 = transSVGPath( paths[5][0], [ -120, -20 ], 1.33 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(675,330)'
+          transform: 'translate(475,330)'
         } ),
         elems = [
           group,
@@ -46,7 +46,7 @@
         path1 = transSVGPath( paths[1][0], [ -100, -30 ], 1.5 ),
         path0 = transSVGPath( paths[2][0], [ -100, -30 ], 1.5 ),
         group = createSVGGroup( svgDoc, {
-          transform: 'translate(670,320)'
+          transform: 'translate(470,320)'
         } ),
         elems = [
           group,

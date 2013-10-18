@@ -12,6 +12,6 @@
           removeElem( rusetti );
         };
       },
-      time: 20000,
+      time: 21000,
       next: 'plant'
     },
