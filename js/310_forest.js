@@ -55,14 +55,16 @@
       kiviPos = [ 0, 0 ],
       kiviScale = 0.5,
       colors = [
-        [[ '#ccc', '#999' ]], // kivi1
+        // line    fill
+        [[ '#999', '#999' ]], // kivi1
         [[ '#bbb', '#888' ]], // kivi2
         [[ '#999', '#aaa' ]], // kivi3
-        [[ '#999', '#9c3' ],[ '#888', '#c93' ],[ '#f66', '#fff' ]], // pikkusieni
+        [[ '#804945', '#82563E' ],[ '#82563E', '#865940' ]], // pikkusieni
         [[ '#fc0', '#960' ]], // kanttis
+        [[ '#7B6333','#806635']], //iso_sieni
         [[ '#fc0', '#960' ]], // rev_kanttis
-        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi
-        [[ '#0f0', '#292' ],[ '#fff', '#2c2' ],[ '#d90', '#2c7' ]], // taimi2
+        [[ '#0f0', '#292' ],[ '#0f0', '#2c2' ]], // taimi
+        [[ '#0f0', '#292' ],[ '#0f0', '#2c2' ]], // taimi2
         [[ '#fff', '#999' ]], // bunny_ihme
         [[ '#fff', '#999' ]], // bunny_hoptoass
         [[ '#fff', '#999' ]], // rev_bunny_ihme
@@ -72,9 +74,11 @@
         frames.kivi1[0][0], frames.kivi2[0][0], frames.kivi3[0][0],
         frames.pikkusieni[0][0],
         frames.kanttis[0][0],
+        frames.iso_sieni[0][0],
         horizFlipSVGPath( frames.kanttis[0][0] ),
         transSVGPath( frames.taimi[2][0], kiviPos, kiviScale ),
         transSVGPath( frames.taimi2[0][0], kiviPos, kiviScale ),
+        
         transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 ),
         transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 ),
         horizFlipSVGPath( transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 )),
@@ -82,8 +86,8 @@
       ],i,j,grp,x=1300,y,kivi,color,
       kiviLen = kivet.length;
       for( ; x<4800; ){
-        j = Math.floor(Math.random()*8);
-        if( j == 7 ){
+        j = Math.floor(Math.random()*(kiviLen-4));
+        if( j == kiviLen-5 ){
           j += Math.floor(Math.random()*4);
         }
         x += Math.floor(Math.random()*180)+80; // "kivien" tiheys
