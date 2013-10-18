@@ -4,17 +4,15 @@
     svg: (function(){
       setTimeout( function(){
         timeline.forest.svg = createSVGGroup(svgDoc,{
-          transform:
-            'translate(0,0)'
+          transform: 'translate(0,0)'
         });
         timeline.forest.svg2 = createSVGGroup(svgDoc,{
-          transform:
-            'translate(0,0)'
+          transform: 'translate(0,0)'
         });
         timeline.forest.svg3 = createSVGGroup(timeline.forest.svg2,{
-          transform:
-            'translate(5800,0)'
+          transform: 'translate(5800,0)'
         });
+        setStyles(timeline.forest.svg3,{visibility:'hidden'})
       }, 0 );
     })(),
     trees: {
@@ -78,7 +76,7 @@
         horizFlipSVGPath( frames.kanttis[0][0] ),
         transSVGPath( frames.taimi[2][0], kiviPos, kiviScale ),
         transSVGPath( frames.taimi2[0][0], kiviPos, kiviScale ),
-        
+
         transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 ),
         transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 ),
         horizFlipSVGPath( transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 )),
@@ -92,9 +90,7 @@
         }
         x += Math.floor(Math.random()*180)+80; // "kivien" tiheys
         y = 480+Math.floor(Math.random()*30)-15;
-        grp = createSVGGroup(parent,{transform:
-          'translate('+x+','+y+')'
-        });
+        grp = createSVGGroup(parent,{transform: 'translate('+x+','+y+')' });
         color = colors[j];
         color = color[Math.floor(Math.random()*color.length)];
         kivi = transSVGPath( kivet[j], kiviPos, Math.random()*1.2 );
@@ -119,6 +115,9 @@
       forestMoves = [],
       elems = this.bunnyThings(t),
       fractalGroup = this.treeGroup;
+      setTimeout(function(){
+        setStyles(timeline.forest.svg3,{visibility:'visible'});
+      }, 15000 );
       anims.push(
         createSVGMoveAnim( fractalGroup, t, 12000, 0, '640,680', '-1280,680' )
       );

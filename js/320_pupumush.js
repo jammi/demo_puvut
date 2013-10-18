@@ -1,5 +1,5 @@
   pupumush: {
-    next: 'end',
+    next: 'pupuwtf',
     time: 6000,
     pupuG: (function(){
       return createSVGGroup( svgDoc, {
@@ -12,19 +12,21 @@
       paths = [],
       group = this.pupuG,
       elem, anim, i, path;
+      setStyles(group,{visibility:'hidden'});
       for(i in pframes){
         path = horizFlipSVGPath( pframes[i][0] );
         paths.push( path );
       }
       elem = createSVGPath( group, paths[0], '#fff', 4, '#666' );
       this.pupu = elem;
-      elems.push( elem );
+      // elems.push( elem );
       anim = createSVGAnim( elem, t, 400, 3, 'd',
         paths.join(';')+';'
       );
       elems.push( anim );
       anim = createSVGMoveAnim( group, t, 1200, 0, '-200,380', '400,380', true );
       elems.push( anim );
+      setTimeout(function(){setStyles(group,{visibility:'visible'});},10);
     },
     taikapupuEat: function(t, elems, anims){
       var

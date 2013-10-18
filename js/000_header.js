@@ -1,12 +1,14 @@
 (function(){
 window.addEventListener('load',function(){
   var
+  devel = false, // enable debug texts
   next = 'wait',
   skipTo = false,
   // skipTo = 'load',
   // skipTo = 'plant3',
-  skipTo = 'fractal',
+  // skipTo = 'fractal',
   // skipTo = 'pupumush',
+  skipTo = 'pupudramatic',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,

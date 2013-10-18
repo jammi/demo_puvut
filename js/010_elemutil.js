@@ -57,5 +57,14 @@
     return e;
   },
   removeElem = function(elem){
+    if( !elem ){
+      // console.log('no such elem:',elem);
+      return false;
+    }
+    else if( !elem.parentNode ){
+      // console.log('elem has no parent:',elem);
+      return false;
+    }
     elem.parentNode.removeChild(elem);
+    return true;
   },

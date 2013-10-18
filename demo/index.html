@@ -10,12 +10,14 @@ body {background:#000;}
 (function(){
 window.addEventListener('load',function(){
   var
+  devel = false, // enable debug texts
   next = 'wait',
   skipTo = false,
   // skipTo = 'load',
   // skipTo = 'plant3',
-  skipTo = 'fractal',
+  // skipTo = 'fractal',
   // skipTo = 'pupumush',
+  skipTo = 'pupudramatic',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,
@@ -90,7 +92,16 @@ window.addEventListener('load',function(){
     return e;
   },
   removeElem = function(elem){
+    if( !elem ){
+      // console.log('no such elem:',elem);
+      return false;
+    }
+    else if( !elem.parentNode ){
+      // console.log('elem has no parent:',elem);
+      return false;
+    }
     elem.parentNode.removeChild(elem);
+    return true;
   },
 /** svgutil **/
   createSVG = function(p,rect,viewBox,allowFullScreen){
@@ -316,25 +327,11 @@ window.addEventListener('load',function(){
     ],
     "bunny_dramatic": [
       [
-        "M115,221 L125,182 L145,164 L165,130 L133,149 L109,152 L124,128 L171,111 L185,104 L208,107 L227,107 L243,167 L239,179",
-        "M223,128 L225,148 L236,173 L243,188 L243,221",
-        "M178,123 L189,128 L194,124 L192,119 L190,111 L182,111 L178,124",
-        "M215,129 L223,126 L222,115 L215,113 L211,124 L215,129 z",
-        "M179,161 L196,157 L198,148 L189,139 L201,140 L216,142 L201,148 L203,157 L212,165 L200,160 L179,161 z"
-      ],
-      [
-        "M10,332 L30,251 L70,215 L112,145 L47,184 L-2,191 L28,140 L124,107 L150,93 L198,98 L236,99 L267,220 L261,245",
-        "M228,141 L232,182 L255,232 L267,263 L267,332",
-        "M136,132 L160,141 L170,133 L166,122 L160,107 L145,107 L136,132",
-        "M211,144 L228,138 L225,114 L211,112 L204,132 L211,144 z",
-        "M139,208 L172,200 L177,182 L158,164 L183,165 L214,169 L184,183 L187,200 L205,217 L182,207 L139,208 z"
-      ],
-      [
-        "M-169,490 L-128,324 L-45,251 L39,108 L-93,186 L-194,202 L-131,98 L64,30 L119,1 L216,11 L294,13 L359,262 L345,313",
-        "M278,98 L285,184 L333,287 L359,350 L359,490",
-        "M89,80 L138,98 L158,84 L151,61 L139,30 L108,30 L89,82",
-        "M242,105 L278,92 L272,45 L242,39 L228,82 L242,105 z",
-        "M96,238 L164,221 L173,183 L135,147 L185,149 L249,157 L188,185 L194,220 L231,256 L183,234 L96,238 z"
+        "M14,299 L38,204 L85,163 L133,81 L57,126 L0,134 L36,75 L147,36 L178,20 L233,26 L278,27 L315,169 L307,198 L320,300",
+        "M269,84 L273,124 L307,198 L286,165 L191,221 L112,165",
+        "M161,65 L189,76 L200,67 L196,54 L190,37 L172,37 L161,66",
+        "M248,79 L269,72 L265,45 L248,42 L240,66 L248,79 z",
+        "M165,155 L204,145 L209,124 L187,103 L216,104 L252,109 L217,125 L221,145 L242,165 L214,153 L165,155 z"
       ]
     ],
     "bunny_eats": [
@@ -649,7 +646,6 @@ Bunny = (function(){
   prevKill,
   prevItem,
   runTime = 0,
-  devel = true, // enable debug texts
   timerStarted,
   timerElem,
   createTimer = function(){
@@ -869,9 +865,9 @@ Bunny = (function(){
 /** intro **/
     // add text and stuff here, while the tie is spinning
     intro: {
-      text: "Huhuu presents PUVUT ☮ Credits:\
+      text: "Huhuu presents PUVUT ☮ Credits ~\
         jammi: code ☈ ainu: graphics ☀ frank_one: music ☁\
-        Please enjoy your stay at AltParty2013!",
+        Please enjoy your stay at AltParty2013! kthxbai <83",
       grp: (function(){
         return createSVGGroup( svgDoc, {
           transform: 'translate(0,0)'
@@ -1473,17 +1469,15 @@ Bunny = (function(){
     svg: (function(){
       setTimeout( function(){
         timeline.forest.svg = createSVGGroup(svgDoc,{
-          transform:
-            'translate(0,0)'
+          transform: 'translate(0,0)'
         });
         timeline.forest.svg2 = createSVGGroup(svgDoc,{
-          transform:
-            'translate(0,0)'
+          transform: 'translate(0,0)'
         });
         timeline.forest.svg3 = createSVGGroup(timeline.forest.svg2,{
-          transform:
-            'translate(5800,0)'
+          transform: 'translate(5800,0)'
         });
+        setStyles(timeline.forest.svg3,{visibility:'hidden'})
       }, 0 );
     })(),
     trees: {
@@ -1547,7 +1541,7 @@ Bunny = (function(){
         horizFlipSVGPath( frames.kanttis[0][0] ),
         transSVGPath( frames.taimi[2][0], kiviPos, kiviScale ),
         transSVGPath( frames.taimi2[0][0], kiviPos, kiviScale ),
-        
+
         transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 ),
         transSVGPath( frames.bunny_hoptoass[0][0], kiviPos, 0.7 ),
         horizFlipSVGPath( transSVGPath( frames.bunny_ihme[3][0], kiviPos, 0.7 )),
@@ -1561,9 +1555,7 @@ Bunny = (function(){
         }
         x += Math.floor(Math.random()*180)+80; // "kivien" tiheys
         y = 480+Math.floor(Math.random()*30)-15;
-        grp = createSVGGroup(parent,{transform:
-          'translate('+x+','+y+')'
-        });
+        grp = createSVGGroup(parent,{transform: 'translate('+x+','+y+')' });
         color = colors[j];
         color = color[Math.floor(Math.random()*color.length)];
         kivi = transSVGPath( kivet[j], kiviPos, Math.random()*1.2 );
@@ -1588,6 +1580,9 @@ Bunny = (function(){
       forestMoves = [],
       elems = this.bunnyThings(t),
       fractalGroup = this.treeGroup;
+      setTimeout(function(){
+        setStyles(timeline.forest.svg3,{visibility:'visible'});
+      }, 15000 );
       anims.push(
         createSVGMoveAnim( fractalGroup, t, 12000, 0, '640,680', '-1280,680' )
       );
@@ -1636,7 +1631,7 @@ Bunny = (function(){
   },
 /** pupumush **/
   pupumush: {
-    next: 'end',
+    next: 'pupuwtf',
     time: 6000,
     pupuG: (function(){
       return createSVGGroup( svgDoc, {
@@ -1649,19 +1644,21 @@ Bunny = (function(){
       paths = [],
       group = this.pupuG,
       elem, anim, i, path;
+      setStyles(group,{visibility:'hidden'});
       for(i in pframes){
         path = horizFlipSVGPath( pframes[i][0] );
         paths.push( path );
       }
       elem = createSVGPath( group, paths[0], '#fff', 4, '#666' );
       this.pupu = elem;
-      elems.push( elem );
+      // elems.push( elem );
       anim = createSVGAnim( elem, t, 400, 3, 'd',
         paths.join(';')+';'
       );
       elems.push( anim );
       anim = createSVGMoveAnim( group, t, 1200, 0, '-200,380', '400,380', true );
       elems.push( anim );
+      setTimeout(function(){setStyles(group,{visibility:'visible'});},10);
     },
     taikapupuEat: function(t, elems, anims){
       var
@@ -1709,6 +1706,171 @@ Bunny = (function(){
       );
       return function(){
         for( i in elems ){ removeElem( elems[i] ); }
+      };
+    }
+  },
+/** pupuwtf **/
+  pupuwtf: {
+    next: 'pupudramatic',
+    time: 2000,
+    fractalForestDel: function(){
+      var
+      forest = timeline.forest,
+      i, forestNames=['treeGroup','taikaPaths',
+      'taikaGroup','taika','taikaAnim','taikaAnim2',
+      'taikaAnim3'];
+      for( i in forestNames ){
+        removeElem( forest[forestNames[i]] );
+        forest[forestNames[i]] = null;
+        delete forest[forestNames[i]];
+      }
+      removeElem(timeline.pupumush.pupu);
+      timeline.pupumush.pupu = null;
+      delete timeline.pupumush.pupu;
+      for( i in forest.trees.groups ){
+        removeElem( forest.trees.groups[i] );
+      }
+      forest.trees = {
+        groups: [],
+        positions: []
+      };
+    },
+    drawPupuWTF: function(t,elems){
+      var
+      pframes = frames.bunny_ihme,
+      paths = [],
+      elem, anim, i, path;
+      for(i in pframes){
+        path = horizFlipSVGPath( pframes[i][0] );
+        paths.push( path );
+      }
+      elem = timeline.pupumush.pupu;
+
+      elems.push( elem );
+      this.pupu = elem;
+      anim = createSVGAnim( elem, t, 1000, 0, 'd',
+        paths.join(';')+';'
+      );
+      setTimeout(function(){
+        removeElem(anim);
+        setSVGAttrs( elem, {
+          d: paths[3]
+        } );
+      }, 1000 );
+      elems.push( anim );
+    },
+    init: function(t,elems){
+      var
+      elems=[], i,
+      _this = this;
+      this.drawPupuWTF(t,elems);
+      return function(){
+        _this.fractalForestDel();
+        for( i in elems ){ removeElem( elems[i] ); }
+      };
+    }
+  },
+/** pupudramatic **/
+  pupudramatic: {
+    next: 'pupurainbow',
+    time: 3000,
+    trippyG: (function(){
+      return createSVGGroup( svgDoc, {
+        transform: 'translate(0,0)'
+      } );
+    })(),
+    pupuG: (function(){
+      return createSVGGroup( svgDoc, {
+        transform: 'translate(0,0)'
+      } );
+    })(),
+    drawTrippyBg: function(t,elems){
+      var
+      elem = createSVGPath( this.trippyG, 'M0,0 L1280,0 L1280,720 L0,720 z', 'transparent', 0, '#f00' ),
+      anim = createSVGAnim( elem, t, 400, 'indefinite', 'fill', '#f00;#0f0;#00f;' );
+      elems.push( elem ); elems.push( anim );
+    },
+    drawPupuDramatic2: function(t,elems){
+      var
+      pframes = frames.bunny_dramatic,
+      paths = [],
+      group = this.pupuG,
+      elem, anim, i, j, path;
+      for( i in pframes[0] ){
+        path = scaleSVGPath( pframes[2][i], 2 );
+        elem = createSVGPath( group, path, '#000', 16, 'transparent' );
+        elems.push( elem );
+        paths = [];
+        for( j in pframes ){
+          paths.push( scaleSVGPath( pframes[j][i], 2 ) );
+        }
+        for( j in pframes ){
+          paths.push( scaleSVGPath( pframes[j][i], 4 ) );
+        }
+        paths.push( path );
+        anim = createSVGAnim( elem, t, 1600, 0, 'd',
+          paths.join(';')+';'
+        );
+        elems.push(anim);
+      }
+    },
+    drawPupuDramatic: function(t,elems){
+      var
+      pframes = frames.bunny_dramatic[0],
+      paths = [],
+      group = this.pupuG,
+      colors = [
+        '#999', // body
+        'transparent', // ear&jawline
+        '#c00', // eye
+        '#c00', // eye
+        '#000'
+      ],
+      elem, anim, i, j, path, color;
+      for( i in pframes ){
+        color = colors[i];
+        path = scaleSVGPath( pframes[i] );
+        elem = createSVGPath( group, path, '#000', 16, color );
+        elems.push( elem );
+        paths = [
+          transSVGPath( path, [640,400], 0.5 ),
+          transSVGPath( path, [400,200], 2 ),
+          transSVGPath( path, [-600,-200], 8 ),
+          transSVGPath( path, [-6400,-1600], 40 ),
+        ];
+        anim = createSVGAnim( elem, t, 800, 6, 'd',
+          paths.join(';')+';'
+        );
+        elems.push(anim);
+        if( i==2 || i==3 ){
+          anim = createSVGAnim( elem, t, 400, 'indefinite', 'fill', '#0ff;#f0f;#ff0;' );
+        }
+        elems.push(anim);
+      }
+    },
+    init: function(t,elems){
+      var
+      elems=[], i,
+      _this = this;
+      this.drawTrippyBg(t,elems);
+      this.drawPupuDramatic(t,elems);
+      return function(){
+        for( i in elems ){ removeElem( elems[i] ); }
+      };
+    }
+  },
+/** pupurainbow **/
+  pupurainbow: {
+    time: 60000,
+    next: 'end',
+    init: function(t){
+      var
+      i, elems = [];
+
+      return function(){
+        for( i in elems ){
+
+        }
       };
     }
   },

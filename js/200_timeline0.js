@@ -2,7 +2,6 @@
   prevKill,
   prevItem,
   runTime = 0,
-  devel = true, // enable debug texts
   timerStarted,
   timerElem,
   createTimer = function(){
