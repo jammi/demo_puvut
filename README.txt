@@ -2,6 +2,9 @@
 
 A demo to Alt Party 2013
 
+The demo files are in the 'demo' folder,
+just open the 'index.html' file to play.
+
 ## Development information:
 
 ### Building html previews for svg animation
@@ -20,11 +23,10 @@ To run the animation preview server, do this:
 Then point your web browser to http://127.0.0.1:12013/
 
 ### Development dependencies:
-  - ruby
-  - gem install nokogiri
-  - gem install rsence-pre
-
+  - ruby2
+  - gem install nokogiri rsence-pre sass
 
 ## Credits:
   jammi - code, concept, graphics, animation
-  ainu  - support, story, graphics, animation, music
+  ainu  - support, story, graphics, animation
+  frank_one - music

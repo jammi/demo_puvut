@@ -26,7 +26,7 @@
             'translate('+x+','+y+')'
           }),
           opts  = {
-            maxDepth: Math.round(size/5.5),
+            maxDepth: Math.round(size/6.5),
             colors: [
               '#531','#531',
               '#452',

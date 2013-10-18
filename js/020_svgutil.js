@@ -16,6 +16,7 @@
         width: w+'px', height: h+'px'
       },
       xmlns: svgNS,
+      'xmlns:xlink': xlinkNS,
       viewBox: viewBox,
       preserveAspectRatio: 'xMidYMid slice',
       version: '1.1',
@@ -137,6 +138,7 @@
     } );
   },
   setSVGAttrs = function( elem, attrs ){
+    // setAttrsNS( elem, attrs, svgNS );
     for( var i in attrs ){
       elem.setAttributeNS( null, i, attrs[i] );
     }

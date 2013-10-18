@@ -3,9 +3,9 @@ window.addEventListener('load',function(){
   var
   next = 'wait',
   skipTo = false,
-  // skipTo = 'plant',
+  // skipTo = 'load',
   // skipTo = 'plant3',
-  // skipTo = 'fractal',
+  skipTo = 'fractal',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,
@@ -18,4 +18,5 @@ window.addEventListener('load',function(){
   b = d.body,
   u = undefined,
   svgNS = 'http://www.w3.org/2000/svg',
+  xlinkNS = 'http://www.w3.org/1999/xlink',
   now = function(){ return new Date().getTime(); },
