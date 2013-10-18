@@ -6,6 +6,7 @@ window.addEventListener('load',function(){
   // skipTo = 'load',
   // skipTo = 'plant3',
   skipTo = 'fractal',
+  // skipTo = 'pupumush',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,

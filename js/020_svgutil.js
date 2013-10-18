@@ -174,8 +174,9 @@
       to: scale1
     } );
   },
-  createSVGMoveAnim = function( parent, begin, dur, repeat, from, to ){
-    return createElemNS( parent, 'animateTransform', svgNS, {
+  createSVGMoveAnim = function( parent, begin, dur, repeat, from, to, set ){
+    var
+    elem = createElemNS( parent, 'animateTransform', svgNS, {
       attributeName: 'transform',
       attributeType: 'XML',
       type: 'translate',
@@ -185,6 +186,12 @@
       from: from,
       to: to
     } );
+    if( set ){
+      setAttrs(parent,{
+        transform: 'translate('+to+')'
+      });
+    }
+    return elem;
   },
   createSVGPath = function( parent, path, stroke, strokeWidth, fill ){
     var attr = {

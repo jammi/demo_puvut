@@ -3,7 +3,7 @@
       next: 'forest',
       defaultTreeOpts: {
         animDraw: true,
-        animSpeed: 80, // ms
+        animSpeed: 360, // ms
         maxDepth: 11,
         colors: [
           '#655533','#655533','#655533','#655533',
