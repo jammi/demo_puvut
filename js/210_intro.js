@@ -1,8 +1,8 @@
     // add text and stuff here, while the tie is spinning
     intro: {
-      text: "Huhuu presents PUVUT ☮ Credits:\
+      text: "Huhuu presents PUVUT ☮ Credits ~\
         jammi: code ☈ ainu: graphics ☀ frank_one: music ☁\
-        Please enjoy your stay at AltParty2013!",
+        Please enjoy your stay at AltParty2013! kthxbai",
       grp: (function(){
         return createSVGGroup( svgDoc, {
           transform: 'translate(0,0)'
