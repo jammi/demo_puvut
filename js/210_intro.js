@@ -2,7 +2,7 @@
     intro: {
       text: "Huhuu presents PUVUT ☮ Credits ~\
         jammi: code ☈ ainu: graphics ☀ frank_one: music ☁\
-        Please enjoy your stay at AltParty2013! kthxbai",
+        Please enjoy your stay at AltParty2013! kthxbai <83",
       grp: (function(){
         return createSVGGroup( svgDoc, {
           transform: 'translate(0,0)'
