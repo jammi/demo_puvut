@@ -72,7 +72,7 @@
       else {
         clearTimeout(_this.treeInterval);
         _this.treeInterval = setInterval(_this.treeMove,134);
-        _this.treeIntervalF = setInterval(_this.fireMove,124);
+        _this.treeIntervalF = setInterval(_this.fireMove,115);
         createSVGMoveAnim( _this.treeG, t, 120000, 0, '0,0', '-60000,0' );
         return;
       }
