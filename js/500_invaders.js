@@ -1,11 +1,46 @@
 
   invaders: {
     next: 'end',
-    time: 120000,
+    time: 30000,
+    treeMove: function(){
+      var
+      _this = timeline.invaders,
+      trees = _this.trees,
+      norm = trees.norm,
+      normPos = trees.normPos,
+      posDiffX = (normPos[21][0]-normPos[0][0])+75,
+      grp = norm.shift(),
+      xy = normPos.shift(),
+      x = xy[0]+posDiffX,
+      y = xy[1];
+      normPos.push([x,y]);
+      norm.push(grp);
+      setSVGAttrs( grp, {
+        transform: 'translate('+x+','+y+')'
+      } );
+    },
+    fireMove: function(){
+      var
+      _this = timeline.invaders,
+      trees = _this.trees,
+      fire = trees.fire,
+      firePos = trees.firePos,
+      posDiffX = (firePos[21][0]-firePos[0][0])+75,
+      grp = fire.shift(),
+      xy = firePos.shift(),
+      x = xy[0]+posDiffX,
+      y = xy[1];
+      firePos.push([x,y]);
+      fire.push(grp);
+      setSVGAttrs( grp, {
+        transform: 'translate('+x+','+y+')'
+      } );
+    },
     treegen: function(t,elems){
       var
-      forest = timeline.invaders,
-      trees = forest.trees,
+      _this = timeline.invaders,
+      trees = _this.trees,
+      typeSize = 1800,
       colorsNorm = [
         '#655533','#655533',
         '#452',
@@ -13,7 +48,7 @@
         '#392','#392','#392',
       ],
       colorsFire = [
-        '#655533',
+        'transparent',
         '#faff00',
         '#ffe900',
         '#ffac00',
@@ -23,27 +58,31 @@
       colors, grp, posArr,
       treeComplexity = 4.5;
       if(trees.count < 22){
-        colors = colorsNorm;
-        grp = trees.norm;
-        posArr = trees.normPos;
-      }
-      else if(trees.count < 44){
         colors = colorsFire;
         grp = trees.fire;
         posArr = trees.firePos;
         treeComplexity = 5.5;
       }
+      else if(trees.count < 44){
+        colors = colorsNorm;
+        grp = trees.norm;
+        posArr = trees.normPos;
+        typeSize = 150;
+      }
       else {
-        clearTimeout(timeline.invaders.treegenInterval);
+        clearTimeout(_this.treeInterval);
+        _this.treeInterval = setInterval(_this.treeMove,134);
+        _this.treeIntervalF = setInterval(_this.fireMove,124);
+        createSVGMoveAnim( _this.treeG, t, 120000, 0, '0,0', '-60000,0' );
         return;
       }
       trees.count += 1;
       var
       size  = Math.round(Math.random()*10)+20,
-      x = (grp.length*75-size),
+      x = (grp.length*75)-typeSize,
       y = Math.round(Math.random()*50),
       // foo = (function(){console.log('size:',size)})(),
-      group = createSVGGroup(forest.treeG,{transform:
+      group = createSVGGroup(_this.treeG,{transform:
         'translate('+x+','+y+')'
       }),
       opts  = {
@@ -107,10 +146,10 @@
     init: function(t){
       var
       spaceG = createSVGGroup( svgDoc, { transform: 'translate(0,0)' } ),
-      treeG = createSVGGroup( svgDoc, { transform: 'translate(0,100)' } ),
-      pupuG = createSVGGroup( svgDoc, { transform: 'translate(300,250)' } ),
+      treeG  = createSVGGroup( svgDoc, { transform: 'translate(0,100)' } ),
+      pupuG  = createSVGGroup( svgDoc, { transform: 'translate(300,250)' } ),
       frontG = createSVGGroup( svgDoc, { transform: 'translate(0,500)' } ),
-      elems = [], i, paths, path, elem, anim, _this = this;
+      elems  = [], i, paths, path, elem, anim, _this = this;
 
       this.drawPuput(t,elems,pupuG);
 
@@ -118,15 +157,26 @@
       setSVGAttrs( treeG, {
         transform: 'translate(-6000,0)'
       });
-      createSVGMoveAnim( treeG, t, 120000, 0, '0,0', '-60000,0' );
-      _this.treegenInterval = setInterval( function(){
+      _this.treeInterval = setInterval( function(){
         _this.treegen( Math.round(svgDoc.getCurrentTime()*1000), elems )
-      }, 10 );
+      }, 20 );
 
       return function(){
-        for( i in elems ){
-          removeElem( elems[i] );
-        }
+        setSVGAttrs( pupuG, {
+          transform: 'translate(6000,-2000)'
+        });
+        elems.push(
+          createSVGMoveAnim( pupuG, Math.round(svgDoc.getCurrentTime()*1000), 4000, 0, '300,250', '2000,250' )
+        );
+        elems.push(pupuG);
+        elems.push(treeG);
+        clearTimeout(_this.treeInterval);
+        clearTimeout(_this.treeIntervalF);
+        setTimeout(function(){
+          for( i in elems ){
+            removeElem( elems[i] );
+          }
+        }, 5000 );
       }
     }
   },

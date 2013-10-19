@@ -1,7 +1,7 @@
 (function(){
 window.addEventListener('load',function(){
   var
-  devel = true, // enable debug texts
+  devel = false, // enable debug texts
   next = 'wait',
   skipTo = false,
   // skipTo = 'load',
