@@ -124,7 +124,6 @@
       apath, path, elem, anim, move, j=0,
       tops = [ 50, 75, 113, 169, 253, 380 ],
       top;
-      console.log('invaders');
       for( ; j < 6; j++ ){
         apath = [];
         color = colors[j];
@@ -143,15 +142,43 @@
         elems.push(anim);
       }
     },
+    text: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit,\
+           sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna \
+           aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud \
+           exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea \
+           commodo consequat. Duis autem vel eum iriure dolor in hendrerit in \
+           vulputate velit esse molestie consequat, vel illum dolore eu feugiat \
+           nulla facilisis at vero eros et accumsan et iusto odio dignissim qui \
+           blandit praesent luptatum zzril delenit augue duis dolore te feugait',
+    drawTextScroller: function(t,elems,grp){
+      var
+      creditsPath = frames.creditspath_end,
+      text = this.text,
+
+      // tweak these after changing text:
+      textStart = 1500,
+      textEnd = -6500,
+
+      dur = 25000,
+      textStyle = {
+        stroke: '#fff',
+        fill: '#000',
+        'font-size': 100,
+        'font-family': 'sans-serif',
+        'stroke-width': 4
+      };
+      drawTextScroller( t, elems, grp, creditsPath, text, textStart, textEnd, dur, textStyle );
+    },
     init: function(t){
       var
       spaceG = createSVGGroup( svgDoc, { transform: 'translate(0,0)' } ),
       treeG  = createSVGGroup( svgDoc, { transform: 'translate(0,100)' } ),
       pupuG  = createSVGGroup( svgDoc, { transform: 'translate(300,250)' } ),
-      frontG = createSVGGroup( svgDoc, { transform: 'translate(0,500)' } ),
+      frontG = createSVGGroup( svgDoc, { transform: 'translate(0,0)' } ),
       elems  = [], i, paths, path, elem, anim, _this = this;
 
       this.drawPuput(t,elems,pupuG);
+      this.drawTextScroller( t, elems, frontG );
 
       this.treeG = treeG;
       setSVGAttrs( treeG, {

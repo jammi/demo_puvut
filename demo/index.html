@@ -18,7 +18,7 @@ window.addEventListener('load',function(){
   // skipTo = 'fractal',
   // skipTo = 'pupumush',
   // skipTo = 'pupudramatic',
-  // skipTo = 'invaders',
+  skipTo = 'invaders',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,
@@ -316,6 +316,37 @@ window.addEventListener('load',function(){
   createSVGGroup2 = function( parent, attr ){
     return createElemNS( parent, 'svg', svgNS, attr );
   },
+  drawTextScroller = function( t, elems, grp, creditsPath, text, textStart, textEnd, dur, textStyle ){
+    var
+    defs = createElemNS( grp, 'defs', svgNS ),
+    waves = createElemNS( grp, 'path', svgNS, {
+      d: creditsPath,
+      id: 'txtpath',
+      fill: 'transparent'
+    } ),
+    textElem = createElemNS( grp, 'text', svgNS, textStyle ),
+    textPath = createElemNS( textElem, 'textPath', svgNS, {
+      id: 'introtext',
+      startOffset: textStart
+    } );
+    textPath.setAttributeNS( xlinkNS, 'xlink:href', '#txtpath' );
+    textPath.textContent = text;
+    var
+    anim = createElemNS( textPath, 'animate', svgNS, {
+      attributeName: 'startOffset',
+      from: textStart,
+      to: textEnd,
+      begin: t+'ms',
+      dur: dur+'ms',
+      repeatCount: 0
+    } );
+    anim.setAttributeNS( xlinkNS, 'xlink:href', '#introtext' );
+    elems.push(defs);
+    elems.push(waves);
+    elems.push(textElem);
+    elems.push(textPath);
+    elems.push(anim);
+  },
 /** animdata **/
   frames =   {
     "bunny_base": [
@@ -457,6 +488,11 @@ window.addEventListener('load',function(){
     "creditspath": [
       [
         "M1,71 C80,102 124,137 214,228 C305,319 271,477 433,576 C596,675 1281,577 1281,577"
+      ]
+    ],
+    "creditspath_end": [
+      [
+        "M-74,333 C-74,333 54,470 196,319 C304,204 365,98 533,201 C701,304 726,378 844,377 C962,375 1305,367 1305,367"
       ]
     ],
     "fract_tree": [
@@ -724,13 +760,15 @@ Bunny = (function(){
         if( skipTo ){
           skipTo = false;
           svgDoc.setCurrentTime(runTime/1000);
-          timeline.music.currentTime = svgDoc.getCurrentTime()-6.4;
-          timeline.music.play();
         }
-        else if( prevNext == 'load' ){
+        if( prevNext == 'load' ){
           setTimeout( function(){
             timeline.music.play();
           }, 1400 );
+        }
+        else {
+          timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
+          timeline.music.play();
         }
         kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
         if( prevKill ){
@@ -876,51 +914,19 @@ Bunny = (function(){
       })(),
       init: function(t){
         var
-        textStart = 1500,
-        textEnd  = -6500,
         _init = prevItem,
         i,
         rusetti = _init.rusetti,
         ruPath  = _init.ruPath,
         ruAnims = _init.ruAnims,
-        elems = [],
-        grp = this.grp,
-        text = this.text,
-        creditsPath = frames.creditspath[0][0],
-        defs = createElemNS( grp, 'defs', svgNS ),
-        waves = createElemNS( grp, 'path', svgNS, {
-          d: creditsPath,
-          id: 'txtpath',
-          fill: 'transparent'
-        } ),
-        textElem = createElemNS( grp, 'text', svgNS, {
+        elems = [];
+        drawTextScroller( t, elems, this.grp, frames.creditspath[0][0], this.text, 1500, -6500, 22000, {
           stroke: '#fff',
           fill: '#000',
           'font-size': 100,
           'font-family': 'sans-serif',
           'stroke-width': 4
-        } ),
-        textPath = createElemNS( textElem, 'textPath', svgNS, {
-          id: 'introtext',
-          startOffset: textStart
         } );
-        textPath.setAttributeNS( xlinkNS, 'xlink:href', '#txtpath' );
-        textPath.textContent = text;
-        var
-        anim = createElemNS( textPath, 'animate', svgNS, {
-          attributeName: 'startOffset',
-          from: textStart,
-          to: textEnd,
-          begin: t+'ms',
-          dur: '22000ms',
-          repeatCount: 0
-        } );
-        anim.setAttributeNS( xlinkNS, 'xlink:href', '#introtext' );
-        elems.push(defs);
-        elems.push(waves);
-        elems.push(textElem);
-        elems.push(textPath);
-        elems.push(anim);
         return function(){
           for( i in ruAnims ){ removeElem( ruAnims[i] ); }
           for( i in elems ){ removeElem( elems[i] ); }
@@ -2180,7 +2186,6 @@ Bunny = (function(){
       apath, path, elem, anim, move, j=0,
       tops = [ 50, 75, 113, 169, 253, 380 ],
       top;
-      console.log('invaders');
       for( ; j < 6; j++ ){
         apath = [];
         color = colors[j];
@@ -2199,15 +2204,43 @@ Bunny = (function(){
         elems.push(anim);
       }
     },
+    text: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit,\
+           sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna \
+           aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud \
+           exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea \
+           commodo consequat. Duis autem vel eum iriure dolor in hendrerit in \
+           vulputate velit esse molestie consequat, vel illum dolore eu feugiat \
+           nulla facilisis at vero eros et accumsan et iusto odio dignissim qui \
+           blandit praesent luptatum zzril delenit augue duis dolore te feugait',
+    drawTextScroller: function(t,elems,grp){
+      var
+      creditsPath = frames.creditspath_end,
+      text = this.text,
+
+      // tweak these after changing text:
+      textStart = 1500,
+      textEnd = -6500,
+
+      dur = 25000,
+      textStyle = {
+        stroke: '#fff',
+        fill: '#000',
+        'font-size': 100,
+        'font-family': 'sans-serif',
+        'stroke-width': 4
+      };
+      drawTextScroller( t, elems, grp, creditsPath, text, textStart, textEnd, dur, textStyle );
+    },
     init: function(t){
       var
       spaceG = createSVGGroup( svgDoc, { transform: 'translate(0,0)' } ),
       treeG  = createSVGGroup( svgDoc, { transform: 'translate(0,100)' } ),
       pupuG  = createSVGGroup( svgDoc, { transform: 'translate(300,250)' } ),
-      frontG = createSVGGroup( svgDoc, { transform: 'translate(0,500)' } ),
+      frontG = createSVGGroup( svgDoc, { transform: 'translate(0,0)' } ),
       elems  = [], i, paths, path, elem, anim, _this = this;
 
       this.drawPuput(t,elems,pupuG);
+      this.drawTextScroller( t, elems, frontG );
 
       this.treeG = treeG;
       setSVGAttrs( treeG, {

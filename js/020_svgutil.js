@@ -209,3 +209,34 @@
   createSVGGroup2 = function( parent, attr ){
     return createElemNS( parent, 'svg', svgNS, attr );
   },
+  drawTextScroller = function( t, elems, grp, creditsPath, text, textStart, textEnd, dur, textStyle ){
+    var
+    defs = createElemNS( grp, 'defs', svgNS ),
+    waves = createElemNS( grp, 'path', svgNS, {
+      d: creditsPath,
+      id: 'txtpath',
+      fill: 'transparent'
+    } ),
+    textElem = createElemNS( grp, 'text', svgNS, textStyle ),
+    textPath = createElemNS( textElem, 'textPath', svgNS, {
+      id: 'introtext',
+      startOffset: textStart
+    } );
+    textPath.setAttributeNS( xlinkNS, 'xlink:href', '#txtpath' );
+    textPath.textContent = text;
+    var
+    anim = createElemNS( textPath, 'animate', svgNS, {
+      attributeName: 'startOffset',
+      from: textStart,
+      to: textEnd,
+      begin: t+'ms',
+      dur: dur+'ms',
+      repeatCount: 0
+    } );
+    anim.setAttributeNS( xlinkNS, 'xlink:href', '#introtext' );
+    elems.push(defs);
+    elems.push(waves);
+    elems.push(textElem);
+    elems.push(textPath);
+    elems.push(anim);
+  },

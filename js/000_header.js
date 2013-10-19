@@ -9,7 +9,7 @@ window.addEventListener('load',function(){
   // skipTo = 'fractal',
   // skipTo = 'pupumush',
   // skipTo = 'pupudramatic',
-  // skipTo = 'invaders',
+  skipTo = 'invaders',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,
