@@ -142,14 +142,14 @@
         elems.push(anim);
       }
     },
-    text: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit,\
-           sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna \
-           aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud \
-           exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea \
-           commodo consequat. Duis autem vel eum iriure dolor in hendrerit in \
-           vulputate velit esse molestie consequat, vel illum dolore eu feugiat \
-           nulla facilisis at vero eros et accumsan et iusto odio dignissim qui \
-           blandit praesent luptatum zzril delenit augue duis dolore te feugait',
+    text: 'Klingon invaders had attacked the fractal forest, burning it with their lasers. \
+           Scared and confused, the bunnies ran... \
+           Sadly, only the fastest bunnies survived ☹ \
+           ~ This demo was written in Java Script and used svg for vector graphics animation. \
+           GREETINGS: #ruby, #bombsquad, #helsinkihacklab, #INTJs, #leikkimoekki, rsence, reddit, friends here tonight, sleep \
+           THANKS: ion, mimmi-kissa, warmth, okC, jkl, vaasa, hki+, 10 days of life ☺ \
+          
+           THE END',
     drawTextScroller: function(t,elems,grp){
       var
       creditsPath = frames.creditspath_end,
