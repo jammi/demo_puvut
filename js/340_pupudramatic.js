@@ -18,30 +18,6 @@
       anim = createSVGAnim( elem, t, 400, 'indefinite', 'fill', '#f00;#0f0;#00f;' );
       elems.push( elem ); elems.push( anim );
     },
-    drawPupuDramatic2: function(t,elems){
-      var
-      pframes = frames.bunny_dramatic,
-      paths = [],
-      group = this.pupuG,
-      elem, anim, i, j, path;
-      for( i in pframes[0] ){
-        path = scaleSVGPath( pframes[2][i], 2 );
-        elem = createSVGPath( group, path, '#000', 16, 'transparent' );
-        elems.push( elem );
-        paths = [];
-        for( j in pframes ){
-          paths.push( scaleSVGPath( pframes[j][i], 2 ) );
-        }
-        for( j in pframes ){
-          paths.push( scaleSVGPath( pframes[j][i], 4 ) );
-        }
-        paths.push( path );
-        anim = createSVGAnim( elem, t, 1600, 0, 'd',
-          paths.join(';')+';'
-        );
-        elems.push(anim);
-      }
-    },
     drawPupuDramatic: function(t,elems){
       var
       pframes = frames.bunny_dramatic[0],

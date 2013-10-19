@@ -18,7 +18,7 @@ window.addEventListener('load',function(){
   // skipTo = 'fractal',
   // skipTo = 'pupumush',
   // skipTo = 'pupudramatic',
-  skipTo = 'invaders',
+  // skipTo = 'invaders',
   origSkip = skipTo,
   w = window,
   isInFullScreen = false,
@@ -766,10 +766,10 @@ Bunny = (function(){
             timeline.music.play();
           }, 1400 );
         }
-        else {
-          timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
-          timeline.music.play();
-        }
+        // else {
+        //   timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
+        //   timeline.music.play();
+        // }
         kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
         if( prevKill ){
           setTimeout( prevKill, 50 );
@@ -905,8 +905,7 @@ Bunny = (function(){
     // add text and stuff here, while the tie is spinning
     intro: {
       text: "Huhuu presents PUVUT ☮ Credits ~\
-        jammi: code ☈ ainu: graphics ☀ frank_one: music ☁\
-        Please enjoy your stay at AltParty2013! kthxbai <83",
+        jammi: code ☈ ainu: graphics ☀ frank_one: music ☁",
       grp: (function(){
         return createSVGGroup( svgDoc, {
           transform: 'translate(0,0)'
@@ -920,7 +919,7 @@ Bunny = (function(){
         ruPath  = _init.ruPath,
         ruAnims = _init.ruAnims,
         elems = [];
-        drawTextScroller( t, elems, this.grp, frames.creditspath[0][0], this.text, 1500, -6500, 22000, {
+        drawTextScroller( t, elems, this.grp, frames.creditspath[0][0], this.text, 1500, -4500, 22000, {
           stroke: '#fff',
           fill: '#000',
           'font-size': 100,
@@ -1360,7 +1359,9 @@ Bunny = (function(){
         isRandom: true
       },
       init: function(t,treeOpts){
-        var fractStart = now();
+        var
+        fractStart = now(),
+        hadTreeOpts = !!treeOpts;
         frames.fracttree = [];
         if(!treeOpts){
           treeOpts = {}
@@ -1461,6 +1462,12 @@ Bunny = (function(){
         genFract(initCoords);
         elems.push( group );
         if(!timeline.forest.treeGroup){
+          var fuckGrp = createSVGGroup( group, {
+            transform: 'translate(20,-140)'
+          });
+          if( !hadTreeOpts ){
+            timeline.pupufuck.drawFuckers(t,elems,fuckGrp,0.5);
+          }
           timeline.forest.treeGroup = group;
         }
         return function(){
@@ -1798,30 +1805,6 @@ Bunny = (function(){
       anim = createSVGAnim( elem, t, 400, 'indefinite', 'fill', '#f00;#0f0;#00f;' );
       elems.push( elem ); elems.push( anim );
     },
-    drawPupuDramatic2: function(t,elems){
-      var
-      pframes = frames.bunny_dramatic,
-      paths = [],
-      group = this.pupuG,
-      elem, anim, i, j, path;
-      for( i in pframes[0] ){
-        path = scaleSVGPath( pframes[2][i], 2 );
-        elem = createSVGPath( group, path, '#000', 16, 'transparent' );
-        elems.push( elem );
-        paths = [];
-        for( j in pframes ){
-          paths.push( scaleSVGPath( pframes[j][i], 2 ) );
-        }
-        for( j in pframes ){
-          paths.push( scaleSVGPath( pframes[j][i], 4 ) );
-        }
-        paths.push( path );
-        anim = createSVGAnim( elem, t, 1600, 0, 'd',
-          paths.join(';')+';'
-        );
-        elems.push(anim);
-      }
-    },
     drawPupuDramatic: function(t,elems){
       var
       pframes = frames.bunny_dramatic[0],
@@ -1933,6 +1916,27 @@ Bunny = (function(){
   pupufuck: {
     time: 22000,
     next: 'end',
+    drawFuckers: function(t,elems,grp,scale){
+      var
+      pframes = frames.bunny_fuckers,
+      paths = [],
+      group = grp,
+      elem, anim, i, j, path;
+      for( i in pframes[0] ){
+        path = scaleSVGPath( pframes[1][i], scale );
+        elem = createSVGPath( group, path, '#fff', 4, '#666' );
+        elems.push( elem );
+        paths = [];
+        for( j in pframes ){
+          paths.push( scaleSVGPath( pframes[j][i], scale ) );
+        }
+        paths.push( path );
+        anim = createSVGAnim( elem, t, 400, 'indefinite', 'd',
+          paths.join(';')+';'
+        );
+        elems.push(anim);
+      }
+    },
     init: function(t){
       console.log('fuck.');
       return function(){
@@ -2063,7 +2067,7 @@ Bunny = (function(){
 
   invaders: {
     next: 'end',
-    time: 30000,
+    time: 40000,
     treeMove: function(){
       var
       _this = timeline.invaders,
@@ -2204,14 +2208,13 @@ Bunny = (function(){
         elems.push(anim);
       }
     },
-    text: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit,\
-           sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna \
-           aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud \
-           exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea \
-           commodo consequat. Duis autem vel eum iriure dolor in hendrerit in \
-           vulputate velit esse molestie consequat, vel illum dolore eu feugiat \
-           nulla facilisis at vero eros et accumsan et iusto odio dignissim qui \
-           blandit praesent luptatum zzril delenit augue duis dolore te feugait',
+    text: 'Klingon invaders had attacked the fractal forest, burning it with their lasers. \
+           Scared and confused, the bunnies ran... \
+           Sadly, only the fastest bunnies survived ☹ \
+           ~ This demo was written in JavaScript and used svg for vector graphics animation. \
+           GREETINGS: #ruby, #bombsquad, #helsinkihacklab, #INTJs, #leikkimoekki, rsence, reddit, friends here tonight, sleep \
+           THANKS: ion, mimmi-kissa, warmth, okC, jkl, vaasa, hki+, 10 days of life ☺ \
+           THE END',
     drawTextScroller: function(t,elems,grp){
       var
       creditsPath = frames.creditspath_end,
@@ -2219,9 +2222,9 @@ Bunny = (function(){
 
       // tweak these after changing text:
       textStart = 1500,
-      textEnd = -6500,
+      textEnd = -20000,
 
-      dur = 25000,
+      dur = 40000,
       textStyle = {
         stroke: '#fff',
         fill: '#000',

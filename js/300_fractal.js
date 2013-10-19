@@ -52,7 +52,9 @@
         isRandom: true
       },
       init: function(t,treeOpts){
-        var fractStart = now();
+        var
+        fractStart = now(),
+        hadTreeOpts = !!treeOpts;
         frames.fracttree = [];
         if(!treeOpts){
           treeOpts = {}
@@ -153,6 +155,12 @@
         genFract(initCoords);
         elems.push( group );
         if(!timeline.forest.treeGroup){
+          var fuckGrp = createSVGGroup( group, {
+            transform: 'translate(20,-140)'
+          });
+          if( !hadTreeOpts ){
+            timeline.pupufuck.drawFuckers(t,elems,fuckGrp,0.5);
+          }
           timeline.forest.treeGroup = group;
         }
         return function(){

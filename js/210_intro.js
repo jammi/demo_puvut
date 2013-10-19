@@ -1,8 +1,7 @@
     // add text and stuff here, while the tie is spinning
     intro: {
       text: "Huhuu presents PUVUT ☮ Credits ~\
-        jammi: code ☈ ainu: graphics ☀ frank_one: music ☁\
-        Please enjoy your stay at AltParty2013! kthxbai <83",
+        jammi: code ☈ ainu: graphics ☀ frank_one: music ☁",
       grp: (function(){
         return createSVGGroup( svgDoc, {
           transform: 'translate(0,0)'
@@ -16,7 +15,7 @@
         ruPath  = _init.ruPath,
         ruAnims = _init.ruAnims,
         elems = [];
-        drawTextScroller( t, elems, this.grp, frames.creditspath[0][0], this.text, 1500, -6500, 22000, {
+        drawTextScroller( t, elems, this.grp, frames.creditspath[0][0], this.text, 1500, -4500, 22000, {
           stroke: '#fff',
           fill: '#000',
           'font-size': 100,

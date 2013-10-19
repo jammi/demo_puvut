@@ -85,10 +85,10 @@
             timeline.music.play();
           }, 1400 );
         }
-        else {
-          timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
-          timeline.music.play();
-        }
+        // else {
+        //   timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
+        //   timeline.music.play();
+        // }
         kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
         if( prevKill ){
           setTimeout( prevKill, 50 );

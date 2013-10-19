@@ -1,7 +1,7 @@
 
   invaders: {
     next: 'end',
-    time: 30000,
+    time: 40000,
     treeMove: function(){
       var
       _this = timeline.invaders,
@@ -145,10 +145,9 @@
     text: 'Klingon invaders had attacked the fractal forest, burning it with their lasers. \
            Scared and confused, the bunnies ran... \
            Sadly, only the fastest bunnies survived ☹ \
-           ~ This demo was written in Java Script and used svg for vector graphics animation. \
+           ~ This demo was written in JavaScript and used svg for vector graphics animation. \
            GREETINGS: #ruby, #bombsquad, #helsinkihacklab, #INTJs, #leikkimoekki, rsence, reddit, friends here tonight, sleep \
            THANKS: ion, mimmi-kissa, warmth, okC, jkl, vaasa, hki+, 10 days of life ☺ \
-          
            THE END',
     drawTextScroller: function(t,elems,grp){
       var
@@ -157,9 +156,9 @@
 
       // tweak these after changing text:
       textStart = 1500,
-      textEnd = -6500,
+      textEnd = -20000,
 
-      dur = 25000,
+      dur = 40000,
       textStyle = {
         stroke: '#fff',
         fill: '#000',
