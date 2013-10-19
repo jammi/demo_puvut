@@ -1,6 +1,7 @@
   pupudramatic: {
     next: 'pupurainbow',
     time: 3000,
+    count: 0,
     trippyG: (function(){
       return createSVGGroup( svgDoc, {
         transform: 'translate(0,0)'
@@ -76,6 +77,13 @@
       }
     },
     init: function(t,elems){
+      if(this.count == 0){
+        timeline.pupurainbow.next = 'pupudramatic';
+      }
+      this.count += 1;
+      if( this.count == 2 ){
+        this.next = 'invaders';
+      }
       var
       elems=[], i,
       _this = this;
