@@ -12,6 +12,9 @@ just open the 'index.html' file to play.
 To build a html file from an svg file, do this:
   ./build.rb anim/puvujuoksu.svg
 
+To build the demo, do this:
+  ./build.rb > demo/test.html
+
 That will create `anim/puvunjuoksu.html`, which will
 enable a simple preview of how the svg works out animated.
 
