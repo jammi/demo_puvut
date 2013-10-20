@@ -3,7 +3,7 @@
       time: 1800,
       next: 'pupueat5',
       init: function(t){
-        setTimeout( function(){timeline.pupurun.init(t,true,120)}, 1500 );
+        timeline.pupurun.init(t,true,120);
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,
