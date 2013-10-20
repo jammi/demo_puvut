@@ -55,7 +55,7 @@
         '#ff5900',
         '#ff2a00',
       ],
-      colors, grp, posArr,
+      colors, grp, posArr, to,
       treeComplexity = 4.5;
       if(trees.count < 22){
         colors = colorsFire;
@@ -71,8 +71,13 @@
       }
       else {
         clearTimeout(_this.treeInterval);
-        _this.treeInterval = setInterval(_this.treeMove,134);
-        _this.treeIntervalF = setInterval(_this.fireMove,115);
+        var tt = 148, tf = 144;
+        for(to=tt;to<35700;to+=tt){
+          setTimeout(_this.treeMove,to);
+        }
+        for(to=tf;to<38000;to+=tf){
+          setTimeout(_this.fireMove,to);
+        }
         createSVGMoveAnim( _this.treeG, t, 120000, 0, '0,0', '-60000,0' );
         return;
       }
@@ -196,8 +201,6 @@
         );
         elems.push(pupuG);
         elems.push(treeG);
-        clearTimeout(_this.treeInterval);
-        clearTimeout(_this.treeIntervalF);
         setTimeout(function(){
           for( i in elems ){
             removeElem( elems[i] );

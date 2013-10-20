@@ -15,7 +15,7 @@ window.addEventListener('load',function(){
   isInFullScreen = false,
   _resizer = w.addEventListener('resize',function(){
     if(isInFullScreen){return;}
-    window.removeEventListener(_resizer);
+    window.removeEventListener('resize',_resizer);
     setTimeout( function(){window.location.reload(true);}, 500 );
   }),
   d = window.document,

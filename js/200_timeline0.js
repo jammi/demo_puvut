@@ -56,6 +56,7 @@
   itemStart = 0,
   itemTime = 0,
   endTime = 0,
+  ff = ~navigator.userAgent.indexOf('Firefox'),
   svgDoc = createSVG( b, svgRect, '0,0,1280,720', true ),
   nextStep = function(){
     // console.log(svgDoc.getCurrentTime());
@@ -76,20 +77,21 @@
       devel && (timelineText += '<br>next: '+next);
       devel && (timelineElem.innerHTML = timelineText);
       if( !skipTo || prevNext == skipTo ){
+        t = Math.round(svgDoc.getCurrentTime()*1000);
         if( skipTo ){
           skipTo = false;
           svgDoc.setCurrentTime(runTime/1000);
+        }
+        else if( prevNext != 'load' && origSkip){
+          timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
+          timeline.music.play();
         }
         if( prevNext == 'load' ){
           setTimeout( function(){
             timeline.music.play();
           }, 1400 );
         }
-        // else {
-        //   timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
-        //   timeline.music.play();
-        // }
-        kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
+        kill = item.init(t);
         if( prevKill ){
           setTimeout( prevKill, 50 );
           prevKill = null;
@@ -131,8 +133,13 @@
   timeline = {
     musicLoaded: false,
     music: (function(){
-      var
-      music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
+      var music = createElem( b, 'audio' );
+      if( music.canPlayType('audio/mpeg') ){
+        setAttrs( music, { src: 'mc_misse-muukalaiswewd.mp3' } );
+      }
+      else {
+        setAttrs( music, { src: 'mc_misse-muukalaiswewd.ogg' } );
+      }
       music.volume = 0;
       music.play();
       music.addEventListener('canplay',function(){
@@ -140,13 +147,23 @@
         timeline.musicLoaded = true;
         console.log('canplay');
         music.pause();
-        setTimeout( function(){
+        if(ff){
+          // workaround kludge for ff svg timer bug
           music.volume = 1;
           music.currentTime=0;
           svgDoc.setCurrentTime(0);
           createTimer();
           nextStep();
-        }, 1000 );
+        }
+        else {
+          setTimeout( function(){
+            music.volume = 1;
+            music.currentTime=0;
+            svgDoc.setCurrentTime(0);
+            createTimer();
+            nextStep();
+          }, 1000 );
+        }
       });
       return music;
     })(),

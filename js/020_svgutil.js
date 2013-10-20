@@ -24,7 +24,6 @@
     });
     if( allowFullScreen ){
       document.body.addEventListener('click',function(){
-        // window.removeEventListener(_resizer);
         setTimeout(function(){
           var
           rect = svgRectFn(),
@@ -129,6 +128,7 @@
   },
   svgRect = svgRectFn(),
   createSVGAnim = function( elem, begin, dur, repeat, attr, values ){
+    if(repeat === 0){repeat = 1;}
     return createElemNS( elem, 'animate', svgNS, {
       begin: begin+'ms',
       dur: dur+'ms',
@@ -144,6 +144,7 @@
     }
   },
   createSVGRotAnim = function( parent, begin, dur, repeat, deg0, deg1, x, y ){
+    if(repeat === 0){repeat = 1;}
     var parBB = parent.getBBox();
     if( x == null ){ x = parBB.x+parBB.width/2 }
     if( y == null ){ y = parBB.y+parBB.height/2 }
@@ -159,6 +160,7 @@
     } );
   },
   createSVGScaleAnim = function( parent, begin, dur, repeat, scale0, scale1 ){
+    if(repeat === 0){repeat = 1;}
     var
     parBB = parent.getBBox(),
     x = parBB.x+parBB.width/2,
@@ -175,6 +177,7 @@
     } );
   },
   createSVGMoveAnim = function( parent, begin, dur, repeat, from, to, set ){
+    if(repeat === 0){repeat = 1;}
     var
     elem = createElemNS( parent, 'animateTransform', svgNS, {
       attributeName: 'transform',
@@ -230,8 +233,7 @@
       from: textStart,
       to: textEnd,
       begin: t+'ms',
-      dur: dur+'ms',
-      repeatCount: 0
+      dur: dur+'ms'
     } );
     anim.setAttributeNS( xlinkNS, 'xlink:href', '#introtext' );
     elems.push(defs);

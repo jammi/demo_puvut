@@ -24,7 +24,7 @@ window.addEventListener('load',function(){
   isInFullScreen = false,
   _resizer = w.addEventListener('resize',function(){
     if(isInFullScreen){return;}
-    window.removeEventListener(_resizer);
+    window.removeEventListener('resize',_resizer);
     setTimeout( function(){window.location.reload(true);}, 500 );
   }),
   d = window.document,
@@ -131,7 +131,6 @@ window.addEventListener('load',function(){
     });
     if( allowFullScreen ){
       document.body.addEventListener('click',function(){
-        // window.removeEventListener(_resizer);
         setTimeout(function(){
           var
           rect = svgRectFn(),
@@ -236,6 +235,7 @@ window.addEventListener('load',function(){
   },
   svgRect = svgRectFn(),
   createSVGAnim = function( elem, begin, dur, repeat, attr, values ){
+    if(repeat === 0){repeat = 1;}
     return createElemNS( elem, 'animate', svgNS, {
       begin: begin+'ms',
       dur: dur+'ms',
@@ -251,6 +251,7 @@ window.addEventListener('load',function(){
     }
   },
   createSVGRotAnim = function( parent, begin, dur, repeat, deg0, deg1, x, y ){
+    if(repeat === 0){repeat = 1;}
     var parBB = parent.getBBox();
     if( x == null ){ x = parBB.x+parBB.width/2 }
     if( y == null ){ y = parBB.y+parBB.height/2 }
@@ -266,6 +267,7 @@ window.addEventListener('load',function(){
     } );
   },
   createSVGScaleAnim = function( parent, begin, dur, repeat, scale0, scale1 ){
+    if(repeat === 0){repeat = 1;}
     var
     parBB = parent.getBBox(),
     x = parBB.x+parBB.width/2,
@@ -282,6 +284,7 @@ window.addEventListener('load',function(){
     } );
   },
   createSVGMoveAnim = function( parent, begin, dur, repeat, from, to, set ){
+    if(repeat === 0){repeat = 1;}
     var
     elem = createElemNS( parent, 'animateTransform', svgNS, {
       attributeName: 'transform',
@@ -337,8 +340,7 @@ window.addEventListener('load',function(){
       from: textStart,
       to: textEnd,
       begin: t+'ms',
-      dur: dur+'ms',
-      repeatCount: 0
+      dur: dur+'ms'
     } );
     anim.setAttributeNS( xlinkNS, 'xlink:href', '#introtext' );
     elems.push(defs);
@@ -737,6 +739,7 @@ Bunny = (function(){
   itemStart = 0,
   itemTime = 0,
   endTime = 0,
+  ff = ~navigator.userAgent.indexOf('Firefox'),
   svgDoc = createSVG( b, svgRect, '0,0,1280,720', true ),
   nextStep = function(){
     // console.log(svgDoc.getCurrentTime());
@@ -757,20 +760,21 @@ Bunny = (function(){
       devel && (timelineText += '<br>next: '+next);
       devel && (timelineElem.innerHTML = timelineText);
       if( !skipTo || prevNext == skipTo ){
+        t = Math.round(svgDoc.getCurrentTime()*1000);
         if( skipTo ){
           skipTo = false;
           svgDoc.setCurrentTime(runTime/1000);
+        }
+        else if( prevNext != 'load' && origSkip){
+          timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
+          timeline.music.play();
         }
         if( prevNext == 'load' ){
           setTimeout( function(){
             timeline.music.play();
           }, 1400 );
         }
-        // else {
-        //   timeline.music.currentTime = svgDoc.getCurrentTime()-1.4;
-        //   timeline.music.play();
-        // }
-        kill = item.init(Math.round(svgDoc.getCurrentTime()*1000));
+        kill = item.init(t);
         if( prevKill ){
           setTimeout( prevKill, 50 );
           prevKill = null;
@@ -812,8 +816,13 @@ Bunny = (function(){
   timeline = {
     musicLoaded: false,
     music: (function(){
-      var
-      music = createElem( b, 'audio', { src: 'mc_misse-muukalaiswewd.mp3' } );
+      var music = createElem( b, 'audio' );
+      if( music.canPlayType('audio/mpeg') ){
+        setAttrs( music, { src: 'mc_misse-muukalaiswewd.mp3' } );
+      }
+      else {
+        setAttrs( music, { src: 'mc_misse-muukalaiswewd.ogg' } );
+      }
       music.volume = 0;
       music.play();
       music.addEventListener('canplay',function(){
@@ -821,13 +830,23 @@ Bunny = (function(){
         timeline.musicLoaded = true;
         console.log('canplay');
         music.pause();
-        setTimeout( function(){
+        if(ff){
+          // workaround kludge for ff svg timer bug
           music.volume = 1;
           music.currentTime=0;
           svgDoc.setCurrentTime(0);
           createTimer();
           nextStep();
-        }, 1000 );
+        }
+        else {
+          setTimeout( function(){
+            music.volume = 1;
+            music.currentTime=0;
+            svgDoc.setCurrentTime(0);
+            createTimer();
+            nextStep();
+          }, 1000 );
+        }
       });
       return music;
     })(),
@@ -1172,7 +1191,7 @@ Bunny = (function(){
       time: 1800,
       next: 'pupueat5',
       init: function(t){
-        setTimeout( timeline.pupurun.init(t,true,120), 1500 );
+        setTimeout( function(){timeline.pupurun.init(t,true,120)}, 1500 );
         var
         paths = frames.bunny_loopeater,
         elem, anim, i,
@@ -2121,7 +2140,7 @@ Bunny = (function(){
         '#ff5900',
         '#ff2a00',
       ],
-      colors, grp, posArr,
+      colors, grp, posArr, to,
       treeComplexity = 4.5;
       if(trees.count < 22){
         colors = colorsFire;
@@ -2137,8 +2156,13 @@ Bunny = (function(){
       }
       else {
         clearTimeout(_this.treeInterval);
-        _this.treeInterval = setInterval(_this.treeMove,134);
-        _this.treeIntervalF = setInterval(_this.fireMove,115);
+        var tt = 148, tf = 144;
+        for(to=tt;to<35700;to+=tt){
+          setTimeout(_this.treeMove,to);
+        }
+        for(to=tf;to<38000;to+=tf){
+          setTimeout(_this.fireMove,to);
+        }
         createSVGMoveAnim( _this.treeG, t, 120000, 0, '0,0', '-60000,0' );
         return;
       }
@@ -2262,8 +2286,6 @@ Bunny = (function(){
         );
         elems.push(pupuG);
         elems.push(treeG);
-        clearTimeout(_this.treeInterval);
-        clearTimeout(_this.treeIntervalF);
         setTimeout(function(){
           for( i in elems ){
             removeElem( elems[i] );
